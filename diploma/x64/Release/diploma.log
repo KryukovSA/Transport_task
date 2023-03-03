@@ -1,0 +1,2 @@
+﻿  method_potentials.cpp
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp : fatal  error C1041: невозможно открыть базу данных программы C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\x64\Release\vc143.pdb; если несколько файлов CL.EXE осуществляют запись в один и тот же PDB-файл, воспользуйтесь /FS

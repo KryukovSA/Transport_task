@@ -1,11 +1,11 @@
 #include <ctime>
 #include "method_potentials.h"
 #include "Cell.h"
+#include <fstream>
+
 
 
 using namespace std;
-
-
 
 
 int main() {
@@ -13,35 +13,38 @@ int main() {
     int countSuppliers;
     int countConsumers;
 
+    ifstream out("zapas.txt");double k = 0;
+    ifstream need("needs.txt");
     cout << "input count Suppliers" << "\n";
     cin >> countSuppliers;
     cout << "input count Consumers" << "\n";
     cin >> countConsumers;
-    vector<double> stocks(countSuppliers);
-    vector<double> needs(countConsumers);
+
+    vector<double> stocks;
+    vector<double> needs;
+
+    while (!out.eof()) {
+        out >> k;
+        stocks.push_back(k);
+        cout <<" zapas from file "<< k << endl;
+    }
+    while (!need.eof()) {
+        need >> k;
+        needs.push_back(k);
+        cout << " potrebnosti from file " << k << endl;
+    }
+    vector<double> suppliersPotincials(countSuppliers); //U
+    vector<double> ñonsumerPotincials(countConsumers); //V
 
     srand(static_cast<unsigned int>(time(0)));
-    //for (int i = 0; i < stocks.size(); i++) {
-    //    stocks[i] = static_cast<int>(getRandomNumber(5, 20));
-    //    cout << stocks[i] << endl;
-    //} 
-    // 
-    //manual input
-    cout << "input Suppliers" << "\n";
-    for (int i = 0; i < stocks.size(); i++) {
-        cin >> stocks[i];
-    }
-    cout << "input Consumers" << "\n";
-    for (int i = 0; i < needs.size(); i++) {
-        cin >> needs[i];
-    }
 
     vector<Cell> v(countConsumers);
     vector < vector<Cell>> costMat(countSuppliers, v);
 
     buildTable(costMat, countSuppliers, countConsumers);
     showTable(costMat, countSuppliers, countConsumers);
-
+    methodMinElem(costMat, stocks, needs);
+    showPostavki(costMat, countSuppliers, countConsumers);
 
 
 

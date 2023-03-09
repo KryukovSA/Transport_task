@@ -12,3 +12,6 @@ void showTable(vector<vector<Cell>>& costMat, int countSuppliers, int countConsu
 void methodMinElem(vector<vector<Cell>>& costMat, vector<double> stocks, vector<double> needs);
 void showPostavki(vector<vector<Cell>>& costMat, int countSuppliers, int countConsumers);
 double findMax(vector<vector<Cell>>& costMat, int countSuppliers, int countConsumers);
+bool checkDegeneratePlan(vector<vector<Cell>>& costMat, int countSuppliers, int countConsumers);
+void calculatePotencials(vector<vector<Cell>>& costMat, vector<double>& suppliersPotincials, vector<double>& ñonsumerPotincials);
+bool checkOptimal(vector<vector<Cell>>& costMat, vector<double>& suppliersPotincials, vector<double>& ñonsumerPotincials);

@@ -1,22 +1,22 @@
 ﻿  method_potentials.cpp
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(31,13): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(45,54): warning C4244: =: преобразование "double" в "int", возможна потеря данных
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(50,75): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(47,13): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(61,54): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(66,75): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
           with
           [
               _Ty=double
           ]
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(57,75): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(73,75): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
           with
           [
               _Ty=double
           ]
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(65,76): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(81,76): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
           with
           [
               _Ty=double
           ]
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(71,58): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(73,59): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(73,22): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(87,58): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(89,59): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(89,22): warning C4244: =: преобразование "double" в "int", возможна потеря данных
   diploma.vcxproj -> C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\x64\Debug\diploma.exe

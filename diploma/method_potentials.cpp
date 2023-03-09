@@ -10,21 +10,37 @@ double getRandomNumber(int min, int max)
 
 
 void buildTable(vector<vector<Cell>>& costMat, int countSuppliers, int countConsumers) {
-    for (int i = 0; i < countSuppliers; i++) {
-        for (int j = 0; j < countConsumers; j++) {
-            costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(2, 15)));
-        }
-    }
+    costMat[0][0].set_tarif(7);
+    costMat[0][1].set_tarif(8);
+    costMat[0][2].set_tarif(1);
+    costMat[0][3].set_tarif(2);
+    costMat[1][0].set_tarif(4);
+    costMat[1][1].set_tarif(5); 
+    costMat[1][2].set_tarif(9);
+    costMat[1][3].set_tarif(8);
+    costMat[2][0].set_tarif(9);
+    costMat[2][1].set_tarif(2); 
+    costMat[2][2].set_tarif(3);
+    costMat[2][3].set_tarif(6); 
+
+    //for (int i = 0; i < countSuppliers; i++) {
+    //    for (int j = 0; j < countConsumers; j++) {
+    //        costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(2, 15)));
+    //    }
+    //}
 }
 
 
 void showTable(vector<vector<Cell>>& costMat, int countSuppliers, int countConsumers) {
+    cout << "\n";
+    cout << "tarifs" << endl;
     for (int i = 0; i < countSuppliers; i++) {
         for (int j = 0; j < countConsumers; j++) {
             std::cout << costMat[i][j].get_tarif() << " "; 
         }
         cout << endl;
     }
+    cout << endl;
 }
 
 void methodMinElem(vector<vector<Cell>>& costMat, vector<double> stocks, vector<double> needs) {
@@ -97,3 +113,106 @@ double findMax(vector<vector<Cell>>& costMat, int countSuppliers, int countConsu
     }
     return max;
 }
+
+bool checkDegeneratePlan(vector<vector<Cell>>& costMat, int countSuppliers, int countConsumers) {
+    int countBasisCell = 0;
+    for (int i = 0; i < countSuppliers; i++) {
+        for (int j = 0; j < countSuppliers; j++) {
+            if (costMat[i][j].get_status() == basic)
+                countBasisCell++;
+        }
+    }
+    if (countBasisCell < countConsumers + countSuppliers - 1) {
+        return true;
+    }
+    return false;
+}
+
+void calculatePotencials(vector<vector<Cell>>& costMat, vector<double> &suppliersPotincials, vector<double> &ñonsumerPotincials) {
+    double identefikator = -100.1;
+
+    for (int i = 0; i < suppliersPotincials.size(); i++) {
+        suppliersPotincials[i] = identefikator;
+    }
+    for (int i = 0; i < ñonsumerPotincials.size(); i++) {
+        ñonsumerPotincials[i] = identefikator;
+    }
+    int counter = 0;
+    suppliersPotincials[0] = 0;
+    while (counter< suppliersPotincials.size()-1) {
+        for (int i = 0; i < suppliersPotincials.size(); i++) {
+            if (suppliersPotincials[i] != identefikator) {
+                for (int j = 0; j < ñonsumerPotincials.size(); j++)
+                {
+                    if (costMat[i][j].get_status() == basic)
+                        ñonsumerPotincials[j] = costMat[i][j].get_tarif() - suppliersPotincials[i];
+                }
+            }
+            if (suppliersPotincials[i] == identefikator) {
+                for (int j = 0; j < ñonsumerPotincials.size(); j++)
+                {
+                    if (costMat[i][j].get_status() == basic && ñonsumerPotincials[j] != identefikator)
+                        suppliersPotincials[i] = costMat[i][j].get_tarif() - ñonsumerPotincials[j];
+                }
+            }
+        }
+        counter++;
+    }
+}
+
+
+bool checkOptimal(vector<vector<Cell>>& costMat, vector<double>& suppliersPotincials, vector<double>& ñonsumerPotincials) {
+
+    bool optimal = true;
+    for (int i = 0; i < suppliersPotincials.size(); i++) {
+        for (int j = 0; j < ñonsumerPotincials.size(); j++) {
+            if (costMat[i][j].get_status() == free_)
+                costMat[i][j].set_defferncTarifAndPotincials(costMat[i][j].get_tarif() - suppliersPotincials[i] - ñonsumerPotincials[j]);
+        }
+    }
+
+    for (int i = 0; i < suppliersPotincials.size(); i++) {
+        for (int j = 0; j < ñonsumerPotincials.size(); j++) {
+            if (costMat[i][j].get_status() == free_) {
+                if (costMat[i][j].get_defferncTarifAndPotincials() >= 0)
+                    continue;
+                else
+                    optimal = false;
+            }
+              
+        }
+    }
+    return optimal;
+
+}
+
+void redistributionSupplies(vector<vector<Cell>>& costMat, vector<double>& suppliersPotincials, vector<double>& ñonsumerPotincials) {
+    if (checkOptimal(costMat, suppliersPotincials, ñonsumerPotincials) == false) {
+        Cell min = costMat[0][0];
+        int minIndexI = 0;
+        int minIndexJ = 0;
+        for (int i = 0; i < suppliersPotincials.size(); i++) {
+            for (int j = 0; j < ñonsumerPotincials.size(); j++) {
+                if (costMat[i][j].get_status() == free_)
+                    if (costMat[i][j].get_defferncTarifAndPotincials() < min.get_defferncTarifAndPotincials()) {
+                        min = costMat[i][j];
+                        minIndexI = i;
+                        minIndexJ = j;
+                    }
+            }
+        }
+        //build halfchain
+        //öèêë êàê òî ñòðîèì +- âûäåëÿåì, âñå êëåòêè ñ ìèíèìàëüíîé ïàñòàâêîé ñòóíóò íóëåâûìè
+        costMat[minIndexI][minIndexJ].set_signInHalfChain(positive);
+
+
+
+
+
+
+    }
+    else {
+        return;
+    }
+}
+

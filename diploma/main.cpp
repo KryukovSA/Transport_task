@@ -44,8 +44,16 @@ int main() {
     buildTable(costMat, countSuppliers, countConsumers);
     showTable(costMat, countSuppliers, countConsumers);
     methodMinElem(costMat, stocks, needs);
-    showPostavki(costMat, countSuppliers, countConsumers);
-
+    showPostavki(costMat, countSuppliers, countConsumers);//ïåğâûé îïîğíûé ïëàí
+    //òóò åùå ïğîâåğèòü íà âûğîæäåííîñòü
+    calculatePotencials(costMat, suppliersPotincials, ñonsumerPotincials);
+    for (int i = 0; i < suppliersPotincials.size(); i++) {
+        cout << suppliersPotincials[i] << " ";
+    }
+    cout << endl;
+    
+    for (int i = 0; i < ñonsumerPotincials.size(); i++)
+        cout << ñonsumerPotincials[i] << " ";
 
 
     std::cout << "hello";

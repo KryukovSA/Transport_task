@@ -1,2 +1,27 @@
 ﻿  method_potentials.cpp
-C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp : fatal  error C1041: невозможно открыть базу данных программы C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\x64\Release\vc143.pdb; если несколько файлов CL.EXE осуществляют запись в один и тот же PDB-файл, воспользуйтесь /FS
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(47,13): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(61,54): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(66,75): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
+          with
+          [
+              _Ty=double
+          ]
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(73,75): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
+          with
+          [
+              _Ty=double
+          ]
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(81,76): warning C4244: аргумент: преобразование "_Ty" в "int", возможна потеря данных
+          with
+          [
+              _Ty=double
+          ]
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(87,58): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(89,59): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\diploma\method_potentials.cpp(89,22): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+  Создание кода
+  2 of 364 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  diploma.vcxproj -> C:\Users\serge\OneDrive\Desktop\bmstu\VKR\program\diploma\x64\Release\diploma.exe

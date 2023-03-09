@@ -14,7 +14,7 @@ public:
     Cell() {
         tarif = 0;
         signInHalfChain = neutral;
-        defferncTarifAndPotincials = -100; //(tarif - (u+v))
+        defferncTarifAndPotincials = 10000; //(tarif - (u+v))
         status = free_;
         cargoVolueme = 0;
     }

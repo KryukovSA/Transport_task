@@ -25,7 +25,7 @@ public:
 
     void Method_potentials_init();
 
-    Method_potentials(int flag);
+    Method_potentials(int flag, int listNum);
     double getRandomNumber(int min, int max);
     void showTable();
     void methodMinElem();
@@ -44,3 +44,5 @@ public:
     void solve();
     int get_value(int i, int j);
 };
+
+bool containIndexes(int i, int j, int size, const vector<int>& indexIinChain, const vector<int>& indexJinChain);

@@ -7,7 +7,8 @@
 
 
 int main() {
-    Method_potentials method_potencials(1);
+    srand(static_cast<unsigned int>(time(0)));
+    Method_potentials method_potencials(0, 4);
     //method_potencials.Method_potentials_init();
 
     //method_potencials.solve();

@@ -110,7 +110,7 @@ Method_potentials::Method_potentials(int flag, int listnum) {
                     
                     for (int i = 0; i < countSuppliers; i++) {
                         for (int j = 0; j < countConsumers; j++) {
-                            costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(2, 15)));
+                            costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(2, 30)));
                         }
                     }
 
@@ -207,33 +207,6 @@ Method_potentials::Method_potentials(int flag, int listnum) {
 
 
     }
-    //costMat.resize(countSuppliers, vector<Cell>(countConsumers));
-    //suppliersPotincials.resize(countSuppliers);
-    //сonsumerPotincials.resize(countConsumers);
-
-  /*  while (!out.eof()) {
-        out >> k;
-        stocks.push_back(k);
-        cout << " zapas from file " << k << endl;
-    }*/
-  /*  while (!need.eof()) {
-        need >> k;
-        needs.push_back(k);
-        cout << " potrebnosti from file " << k << endl;
-    }*/
-
-    //costMat[0][0].set_tarif(7);
-    //costMat[0][1].set_tarif(8);
-    //costMat[0][2].set_tarif(1);
-    //costMat[0][3].set_tarif(2);
-    //costMat[1][0].set_tarif(4);
-    //costMat[1][1].set_tarif(5); 
-    //costMat[1][2].set_tarif(9);
-    //costMat[1][3].set_tarif(8);
-    //costMat[2][0].set_tarif(9);
-    //costMat[2][1].set_tarif(2); 
-    //costMat[2][2].set_tarif(3);
-    //costMat[2][3].set_tarif(6); 
 
 }
 
@@ -357,7 +330,7 @@ void Method_potentials::calculatePotencials() {
         сonsumerPotincials[i] = identefikator;
     }
     int counter = 0;
-    suppliersPotincials[0] = 0;
+    suppliersPotincials[0] = 0;///////в зависимости от того какой выберем мы можем получать как оптимальный так и нет при одних и тех же вариантах
     while (counter < suppliersPotincials.size() - 1) {
         for (int i = 0; i < suppliersPotincials.size(); i++) {
             if (suppliersPotincials[i] != identefikator) {
@@ -437,11 +410,13 @@ void Method_potentials::redistributionSupplies() {
     int old_cost = 0;
     int new_cost = 1;
     int colision = 0;
+
     while (checkOptimal() != true) {//
 
         if (checkDegeneratePlan()) {//вырожденность убирает мб в этом месте не надо
             addNullTransportation();
         }
+        calculatePotencials();//? надо ли
 
         vector<vector<Cell>> tmpCostMat = costMat;
         
@@ -476,7 +451,7 @@ void Method_potentials::redistributionSupplies() {
         int i = 0;
         int j = 0;
         int counter = 0;
-        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4) && counter < 5) && countCycles < suppliersPotincials.size() * сonsumerPotincials.size()) {
+        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4) && counter < 5) && countCycles < 20000) {//suppliersPotincials.size() * сonsumerPotincials.size()
             if (currentIndexI == minIndexI && currentIndexJ == minIndexJ && indexIinChain.size() <= 4) {//количество попаданий в начальную точку.
                 counter++;
             }
@@ -553,14 +528,22 @@ void Method_potentials::redistributionSupplies() {
         }
 
         //перераспределяем поставки в результирующую матрицу
-        for (int k = 0; k < indexIinChain.size() - 1; k++) {// -1 тк клетка начала цикла дважды повторяется
-            if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative) {//можно улучшить чтоб шел по нечетным и все
-                costMat[indexIinChain[k]][indexJinChain[k]].set_cargoVolueme(costMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() - minCargoVolume);
+        if (minCargoVolume != 0) {
+            for (int k = 0; k < indexIinChain.size() - 1; k++) {// -1 тк клетка начала цикла дважды повторяется
+                if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative) {//можно улучшить чтоб шел по нечетным и все
+                    costMat[indexIinChain[k]][indexJinChain[k]].set_cargoVolueme(costMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() - minCargoVolume);
+                }
+                else
+                {
+                    costMat[indexIinChain[k]][indexJinChain[k]].set_cargoVolueme(costMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() + minCargoVolume);
+                }
             }
-            else
-            {
-                costMat[indexIinChain[k]][indexJinChain[k]].set_cargoVolueme(costMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() + minCargoVolume);
-            }
+        }
+        else {
+            showPostavki();
+            std::cout << "calculating cost: " << calculatingСosts() << endl;
+            std::cout << "redistribution volume = 0" << endl;
+            break;
         }
 
 
@@ -574,12 +557,12 @@ void Method_potentials::redistributionSupplies() {
         if (new_cost == old_cost) {
             colision++;
         }
-        if (colision > 5) { //5 это наугад
-            std::cout << "cost not change because break" << endl;
+        if (colision > 3) { //3 это наугад
+            std::cout << "cost not change because break" << endl; //вероятно не понадобится так как я не допускаю нулевое перераспределение
             break;
         }
         calculatePotencials();
-       /* for (int i = 0; i < suppliersPotincials.size(); i++) {
+        /*for (int i = 0; i < suppliersPotincials.size(); i++) {
             cout << suppliersPotincials[i] << " ";
         }
         cout << endl;
@@ -626,6 +609,7 @@ void Method_potentials::addNullTransportation() {
                 if (costMat[k][m].get_cargoVolueme() == 0 && costMat[k][m].get_status() == free_ && !ignoreCell(k, m, ignoreIndexI, ignoreIndexJ)) {
                     cellIndexI = k;
                     cellIndexJ = m;//выделим ее как кандидата
+                    costMat[cellIndexI][cellIndexJ].set_status(basic);//чтоб поиск не сбивался допускаем ее базовой(потом если что отменим)
                     signal = 1;
                     break;
                 }
@@ -647,7 +631,7 @@ void Method_potentials::addNullTransportation() {
         int j = 0;
         int counter = 0; //|| indexIinChain.size() <= 4) && counter < 5 )
         //в игнорируемых все клетки этого столбца
-        while (((currentIndexI != cellIndexI || currentIndexJ != cellIndexJ) || counter < 5) && countCycles < countSuppliers * countConsumers) { //верно ли условие того что цикл не найден. сначала || было вместо &&
+        while ((((currentIndexI != cellIndexI && currentIndexJ != cellIndexJ) || indexIinChain.size()<2) && counter < 5) && countCycles < countSuppliers * countConsumers) { //верно ли условие того что цикл не найден. сначала || было вместо &&
 
             countCycles++;
             int flag = 0;
@@ -658,10 +642,10 @@ void Method_potentials::addNullTransportation() {
             for (i; i < countSuppliers; i++) {
                 if (costMat[i][currentIndexJ].get_status() == basic && i != currentIndexI && (!containIndexes(i, currentIndexJ, indexIinChain.size(), indexIinChain, indexJinChain) || (i == cellIndexI && currentIndexJ == cellIndexJ))) {//
 
-                    if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == positive)
-                        costMat[i][currentIndexJ].set_signInHalfChain(negative);//ранее просто это было
-                    else
-                        costMat[currentIndexI][j].set_signInHalfChain(positive);
+                    //if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == positive)
+                    //    costMat[i][currentIndexJ].set_signInHalfChain(negative);//ранее просто это было
+                    //else
+                    //    costMat[currentIndexI][j].set_signInHalfChain(positive);
                     indexIinChain.push_back(i);//запоминаем индексы клетки (номер строки)
                     indexJinChain.push_back(currentIndexJ);
                     currentIndexI = i;
@@ -672,7 +656,7 @@ void Method_potentials::addNullTransportation() {
             }
             if (flag == 0)       //если в столбце не нашли клетку для продолжения цикла, 
             {     // то в поисках другого столбца, а текущий удалим
-                if (indexJinChain.size() == 1 || indexIinChain.size() == 1) {
+                if (indexJinChain.size() == 1 || indexIinChain.size() == 1) {//чтобы из пустого вектора не удаляли
                     countCycles = countSuppliers * countConsumers;
                     break;
                 }
@@ -685,10 +669,10 @@ void Method_potentials::addNullTransportation() {
             //по Горизонтали в выбрангой строке ищем нужный столбец
             for (j; j < countConsumers; j++) {
                 if (costMat[currentIndexI][j].get_status() == basic && j != currentIndexJ && (!containIndexes(currentIndexI, j, indexIinChain.size(), indexIinChain, indexJinChain) || (currentIndexI == cellIndexI && j == cellIndexJ))) {//
-                    if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == negative)
-                        costMat[currentIndexI][j].set_signInHalfChain(positive);//ранее просто это было
-                    else
-                        costMat[currentIndexI][j].set_signInHalfChain(negative);
+                    //if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == negative)
+                    //    costMat[currentIndexI][j].set_signInHalfChain(positive);//ранее просто это было
+                    //else
+                    //    costMat[currentIndexI][j].set_signInHalfChain(negative);
                     indexIinChain.push_back(currentIndexI);//запоминаем индексы клетки 
                     indexJinChain.push_back(j);//запоминаем номер столбца
                     currentIndexJ = j;
@@ -699,7 +683,7 @@ void Method_potentials::addNullTransportation() {
             }
             if (flag == 0)       //если в строке не нашли клетку для продолжения цикла, 
             {     // то в поисках другой строки, а текущий удалим
-                if (indexIinChain.size() == 1 || indexJinChain.size() == 1) {//indexIinChain.empty()
+                if (indexIinChain.size() == 1 || indexJinChain.size() == 1) {//indexIinChain.empty()   чтобы из пустого вектора не удаляли
                     countCycles = countSuppliers * countConsumers;
                     break;
                 }
@@ -711,10 +695,11 @@ void Method_potentials::addNullTransportation() {
             }
         }
         //countCycles == countSuppliers * countConsumers ||
-        if (countCycles > countSuppliers * countConsumers || ((currentIndexI == cellIndexI && currentIndexJ == cellIndexJ) && indexIinChain.size() <= 4)) { //цикл не найден/ пришли в исходную клетку при длинне цепочки меньше 5
+        if (countCycles >= countSuppliers * countConsumers || ((currentIndexI == cellIndexI && currentIndexJ == cellIndexJ) && indexIinChain.size() <= 4)) { //цикл не найден/ пришли в исходную клетку при длинне цепочки меньше 5   //countSuppliers * countConsumers
             costMat[cellIndexI][cellIndexJ].set_status(basic);//добавляем нулевую перевозку                                                      потому что если бы она была >5 то это значит что просто цикл замкнулся
         }
         else {
+            costMat[cellIndexI][cellIndexJ].set_status(free_);
             ignoreIndexI.push_back(cellIndexI);
             ignoreIndexJ.push_back(cellIndexJ);
         }

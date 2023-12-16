@@ -1,11 +1,13 @@
 #include"Method_potentials.h"
 #include <fstream>
+#include<numeric>
+#include <chrono>
 
 using namespace libxl;
 
 void Method_potentials::solve() {
     
-    showTable();
+    //showTable();
     if (!checkCloseTypeTask()) {//если не закрытая
         addDataForClosingTask();
         closeTypeTask = false;
@@ -18,10 +20,14 @@ void Method_potentials::solve() {
         addNullTransportation();
     }
     calculatePotencials();
-
+    auto start_time = std::chrono::high_resolution_clock::now();
     redistributionSupplies();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
-
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     cout << "result minimal cost: " << calculatingСosts() << endl;
+    std::cout << "execution time: " << duration.count() << " second." << std::endl;
+    showPostavki();
+    cout << endl;
 }
 int Method_potentials::get_value(int i, int j) {
     return costMat[i][j].get_cargoVolueme();
@@ -55,6 +61,39 @@ void Method_potentials::Method_potentials_init() {
 
 }
 
+void Method_potentials::save_example() {
+    // Создаем новую книгу Excel
+    Book* book = xlCreateBook();
+
+    if (book) {
+        // Добавляем новый лист
+        Sheet* sheet = book->addSheet(L"Sheet1");
+
+
+
+        // Запись первого вектора в столбец A, начиная с третьей строки
+        for (int i = 0; i < stocks.size(); ++i) {
+            sheet->writeNum(i + 2, 0, stocks[i]);
+        }
+
+        // Запись второго вектора в строку 2, начиная с ячейки B
+        for (int i = 0; i < needs.size(); ++i) {
+            sheet->writeNum(1, i + 1, needs[i]);
+        }
+
+        for (int i = 0; i < stocks.size(); ++i) {
+            for (int j = 0; j < needs.size(); ++j) {
+                sheet->writeNum(i + 2, j + 1, costMat[i][j].get_tarif());
+            }
+        }
+
+        // Сохраняем книгу
+        book->save(L"output.xls");
+
+        // Закрываем книгу
+        book->release();
+    }
+}
 
 
 
@@ -71,62 +110,73 @@ Method_potentials::Method_potentials(int flag, int listnum) {
                 Sheet* sheet = book->getSheet(listnum); // Получение первого листа
                 if (sheet) {
 
-                    int numRows = sheet->lastRow();
-                    for (int row = sheet->firstRow() + 2; row < numRows; ++row) {
-                        stocks.push_back(sheet->readNum(row, 0));
-                    }
-                    countSuppliers = stocks.size();
+                    //int numRows = sheet->lastRow();
+                    //for (int row = sheet->firstRow() + 2; row < numRows; ++row) {
+                    //    stocks.push_back(sheet->readNum(row, 0));
+                    //}
+                    //countSuppliers = stocks.size();
 
-                    //количество колонок
-                    int numCols = 0;
-                    for (int col = sheet->firstCol() + 1; col < sheet->lastCol(); ++col) {
-                        libxl::CellType cellType = sheet->cellType(1, col); // get cell type
-                        if (cellType == libxl::CELLTYPE_NUMBER) {
-                            numCols++;
-                        }
-                        else {
-                            break;
-                        }
-                    }
-
-
+                    ////количество колонок
+                    //int numCols = 0;
+                    //for (int col = sheet->firstCol() + 1; col < sheet->lastCol(); ++col) {
+                    //    libxl::CellType cellType = sheet->cellType(1, col); // get cell type
+                    //    if (cellType == libxl::CELLTYPE_NUMBER) {
+                    //        numCols++;
+                    //    }
+                    //    else {
+                    //        break;
+                    //    }
+                    //}
 
 
-                    for (int col = sheet->firstCol() + 1; col <= sheet->firstCol() + numCols; ++col) {
-                        if (!std::isnan(sheet->readNum(1, col))) {
-                            needs.push_back(sheet->readNum(1, col));
-                        }
-                        else { break; }
-                    }
 
-                    countConsumers = needs.size();
+                    //for (int col = sheet->firstCol() + 1; col <= sheet->firstCol() + numCols; ++col) {
+                    //    if (!std::isnan(sheet->readNum(1, col))) {
+                    //        needs.push_back(sheet->readNum(1, col));
+                    //    }
+                    //    else { break; }
+                    //}
 
-                    costMat.resize(countSuppliers, vector<Cell>(countConsumers));
-                    suppliersPotincials.resize(countSuppliers);
-                    сonsumerPotincials.resize(countConsumers);
+                    //countConsumers = needs.size();
 
-                    
+                    //countSuppliers = 400;
+                    //countConsumers = 250; //в табл макс 255
+                    //stocks.clear();
+                    //needs.clear();
+                    //
+                    //costMat.resize(countSuppliers, vector<Cell>(countConsumers));
+                    //suppliersPotincials.resize(countSuppliers);
+                    //сonsumerPotincials.resize(countConsumers);
+
+                    set_countSuppliers(500);
+                    set_countConsumers(500);
+
+                    generate_transport_task();
+
+
+
+
                     // отличие в автогенерации тарифов
                     
-                    for (int i = 0; i < countSuppliers; i++) {
+                /*    for (int i = 0; i < countSuppliers; i++) {
                         for (int j = 0; j < countConsumers; j++) {
-                            costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(2, 30)));
+                            costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(2, 2000)));
                         }
-                    }
-
-                    cout << "колическтва запасов  " << countSuppliers << endl;
-                    // Теперь у вас есть вектор с данными из Excel
-                    for (const auto& data : stocks) {
-                        cout << " Value: " << data << endl;
-                    }
-                    cout << "колическтво потребностей  " << countConsumers << endl;
-                    // Теперь у вас есть вектор с данными из Excel
-                    for (const auto& data : needs) {
-                        cout << " Value: " << data << endl;
-                    }
+                    }*/
+                    //save_example();//сохраняю образец в файл
+                    //cout << "колическтва запасов  " << countSuppliers << endl;
+                    //// Теперь у вас есть вектор с данными из Excel
+                    //for (const auto& data : stocks) {
+                    //    cout << " Value: " << data << endl;
+                    //}
+                    //cout << "колическтво потребностей  " << countConsumers << endl;
+                    //// Теперь у вас есть вектор с данными из Excel
+                    //for (const auto& data : needs) {
+                    //    cout << " Value: " << data << endl;
+                    //}
                 }
             }
-            book->save(L"example.xlsx");
+            //book->save(L"example.xlsx");
             book->release(); // Освобождение памяти, занятой объектом книги
         }
 
@@ -146,6 +196,7 @@ Method_potentials::Method_potentials(int flag, int listnum) {
                     }
                     countSuppliers = stocks.size();
 
+                    
                     //количество колонок
                     int numCols = 0;
                     for (int col = sheet->firstCol() + 1; col < sheet->lastCol(); ++col) {
@@ -158,14 +209,14 @@ Method_potentials::Method_potentials(int flag, int listnum) {
                         }
                     }
                    
-
+                 
 
 
                     for (int col = sheet->firstCol() + 1; col <= sheet->firstCol() + numCols; ++col) {
-                        if (!std::isnan(sheet->readNum(1, col))) {
+                        //if (!std::isnan(sheet->readNum(1, col))) {
                             needs.push_back(sheet->readNum(1, col));
-                        }
-                        else { break; }
+                        //}
+                       // else { break; }
                     } 
                    
                     countConsumers = needs.size();
@@ -179,24 +230,24 @@ Method_potentials::Method_potentials(int flag, int listnum) {
                         int j = 0;
                         for (int col = sheet->firstCol() + 1; col <= sheet->firstCol() + numCols; ++col) {
                             
-                            costMat[i][j].set_tarif(sheet->readNum(row, col));
+                            costMat[row-2][col-1].set_tarif(sheet->readNum(row, col));
                             j++;
                         }
                         i++;
                     }
+          
 
 
-
-                    cout << "колическтва запасов  " << countSuppliers << endl;
-                    // Теперь у вас есть вектор с данными из Excel
-                    for (const auto& data : stocks) {
-                        cout << " Value: " << data << endl;
-                    }
-                    cout << "колическтво потребностей  " << countConsumers << endl;
-                    // Теперь у вас есть вектор с данными из Excel
-                    for (const auto& data : needs) {
-                        cout << " Value: " << data << endl;
-                    }
+                    //cout << "колическтва запасов  " << countSuppliers << endl;
+                    //// Теперь у вас есть вектор с данными из Excel
+                    //for (const auto& data : stocks) {
+                    //    cout << " Value: " << data << endl;
+                    //}
+                    //cout << "колическтво потребностей  " << countConsumers << endl;
+                    //// Теперь у вас есть вектор с данными из Excel
+                    //for (const auto& data : needs) {
+                    //    cout << " Value: " << data << endl;
+                    //}
                 }
             }
             book->save(L"example.xlsx");
@@ -206,6 +257,39 @@ Method_potentials::Method_potentials(int flag, int listnum) {
 
 
 
+    }
+
+}
+void Method_potentials::generate_transport_task() {
+
+   
+    stocks.clear();
+    needs.clear();
+
+    costMat.resize(countSuppliers, vector<Cell>(countConsumers));
+    suppliersPotincials.resize(countSuppliers);
+    сonsumerPotincials.resize(countConsumers);
+
+    srand(static_cast<unsigned>(time(0)));
+    for (int i = 0; i < countSuppliers; i++) {
+        stocks.push_back(rand() % 2500 + 1);
+    }
+    for (int i = 0; i < countConsumers; i++) {
+        needs.push_back(rand() % 2500 + 100);
+    }
+    int totalStocks = accumulate(stocks.begin(), stocks.end(), 0);
+    int totalNeeds = accumulate(needs.begin(), needs.end(), 0);
+    if (totalNeeds > totalStocks) {
+        stocks[0] += (totalNeeds - totalStocks);
+    }
+    else if (totalNeeds < totalStocks) {
+        needs[0] += (totalStocks - totalNeeds);
+    }
+    //генерация тарифов
+    for (int i = 0; i < countSuppliers; i++) {
+        for (int j = 0; j < countConsumers; j++) {
+            costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(30, 2000)));
+        }
     }
 
 }
@@ -270,7 +354,7 @@ void Method_potentials::methodMinElem() {
             busyStrIndex.push_back(minIndexI);
         }
         //showPostavki(costMat, stocks.size(), needs.size());
-        cout << endl;
+        //cout << endl;
         min = findMax();
         if (busyStrIndex.size() == stocks.size() && busyColIndex.size() == needs.size()) {
             if (closeTypeTask == false) {//в фиктивные клетки нулевые тарифы(пока тольок если запасы больше)
@@ -321,7 +405,7 @@ bool Method_potentials::checkDegeneratePlan() {
 }
 
 void Method_potentials::calculatePotencials() {
-    double identefikator = -100.1;
+    double identefikator = -100.1786;
 
     for (int i = 0; i < suppliersPotincials.size(); i++) {
         suppliersPotincials[i] = identefikator;
@@ -329,8 +413,35 @@ void Method_potentials::calculatePotencials() {
     for (int i = 0; i < сonsumerPotincials.size(); i++) {
         сonsumerPotincials[i] = identefikator;
     }
+
+    int max_count_basic = 0;
+    int index = 0;
+    for (int m = 0; m < suppliersPotincials.size(); m++) {
+        int max_count_tmp = 0;
+        for (int n = 0; n < сonsumerPotincials.size(); n++) {
+            if (costMat[m][n].get_status() == basic)
+                max_count_tmp++;
+
+        }
+        if (max_count_tmp > max_count_basic) {
+            max_count_basic = max_count_tmp;
+            index = m;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
     int counter = 0;
-    suppliersPotincials[0] = 0;///////в зависимости от того какой выберем мы можем получать как оптимальный так и нет при одних и тех же вариантах
+    suppliersPotincials[index] = 0;///////в зависимости от того какой выберем мы можем получать как оптимальный так и нет при одних и тех же вариантах
+    //suppliersPotincials[suppliersPotincials.size()/2] = 0;
     while (counter < suppliersPotincials.size() - 1) {
         for (int i = 0; i < suppliersPotincials.size(); i++) {
             if (suppliersPotincials[i] != identefikator) {
@@ -351,6 +462,7 @@ void Method_potentials::calculatePotencials() {
         counter++;
     }
 }
+
 
 
 bool Method_potentials::checkOptimal() {
@@ -451,7 +563,7 @@ void Method_potentials::redistributionSupplies() {
         int i = 0;
         int j = 0;
         int counter = 0;
-        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4) && counter < 5) && countCycles < 20000) {//suppliersPotincials.size() * сonsumerPotincials.size()
+        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4)) && countCycles < suppliersPotincials.size() * сonsumerPotincials.size()) {// && counter < stocks.size()
             if (currentIndexI == minIndexI && currentIndexJ == minIndexJ && indexIinChain.size() <= 4) {//количество попаданий в начальную точку.
                 counter++;
             }
@@ -512,17 +624,20 @@ void Method_potentials::redistributionSupplies() {
 
             }
         }
-        if (countCycles >= suppliersPotincials.size() * сonsumerPotincials.size() || counter >= 5) {
+        if (countCycles >= suppliersPotincials.size() * сonsumerPotincials.size() ) {//|| counter >= 5
             cout << "Cycle not found" << "\n";
             break;
         }
-
+        int minI;
+        int minJ;
 
         //ищем минимум поставок в помеченных negative клетках
         double minCargoVolume = tmpCostMat[indexIinChain[1]][indexJinChain[1]].get_cargoVolueme();
         for (int k = 0; k < indexIinChain.size(); k++) {
             if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative && tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() < minCargoVolume) {//можно улучшить чтоб шел по нечетным и все
                 minCargoVolume = tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme();
+                minI = indexIinChain[k];
+                minJ = indexJinChain[k];
             }
 
         }
@@ -542,12 +657,12 @@ void Method_potentials::redistributionSupplies() {
         else {
             showPostavki();
             std::cout << "calculating cost: " << calculatingСosts() << endl;
-            std::cout << "redistribution volume = 0" << endl;
+            std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
             break;
         }
 
 
-        showPostavki();
+        //showPostavki();//----------------------------------------------
 
         //меняем статусы обнуленных клеток
         updateStatuses(indexIinChain, indexJinChain);
@@ -561,8 +676,8 @@ void Method_potentials::redistributionSupplies() {
             std::cout << "cost not change because break" << endl; //вероятно не понадобится так как я не допускаю нулевое перераспределение
             break;
         }
-        calculatePotencials();
-        /*for (int i = 0; i < suppliersPotincials.size(); i++) {
+        
+  /*      for (int i = 0; i < suppliersPotincials.size(); i++) {
             cout << suppliersPotincials[i] << " ";
         }
         cout << endl;
@@ -570,6 +685,7 @@ void Method_potentials::redistributionSupplies() {
         for (int i = 0; i < сonsumerPotincials.size(); i++)
             cout << сonsumerPotincials[i] << " ";
         cout << endl;*/
+        calculatePotencials();
     }
 }
 

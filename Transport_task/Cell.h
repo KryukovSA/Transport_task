@@ -26,7 +26,7 @@ public:
     void set_cargoVolueme(int cargoVolueme_) { cargoVolueme = cargoVolueme_; };
 
 
-    double get_tarif() { return tarif; }
+    double get_tarif() const { return tarif; }
     statusInHalfChain get_signInHalfChain() { return signInHalfChain; }
     double get_defferncTarifAndPotincials() { return defferncTarifAndPotincials; }
     cellStatus get_status() { return status; }

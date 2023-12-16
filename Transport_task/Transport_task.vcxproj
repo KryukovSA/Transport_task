@@ -143,7 +143,6 @@
   <ItemGroup>
     <ClCompile Include="Method_potentials.cpp" />
     <ClCompile Include="SFML_ui.cpp" />
-    <ClCompile Include="Transport_task.cpp" />
     <ClCompile Include="Qt_ui.cpp" />
   </ItemGroup>
   <ItemGroup>

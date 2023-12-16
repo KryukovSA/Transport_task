@@ -8,8 +8,9 @@
 
 int main() {
     srand(static_cast<unsigned int>(time(0)));
-    Method_potentials method_potencials(0, 4); // 1 - из табл тарифы
+    Method_potentials method_potencials(1, 0); // 1 - из табл тарифы
     method_potencials.solve();
+  
     //method_potencials.Method_potentials_init();
 
     //method_potencials.solve();

@@ -22,7 +22,13 @@ class Method_potentials {
 public:
     int get_countConsumers() { return countConsumers; }
     int get_countSuppliers() { return countSuppliers; }
-
+    void set_countConsumers(int countConsumers_) { countConsumers = countConsumers_; }
+    void set_countSuppliers(int countSuppliers_) { countSuppliers = countSuppliers_; }
+    const vector<vector<Cell>>& getCostMat() const {
+        return costMat;
+    }
+    const vector<double>& get_suppliersPotincials() const { return suppliersPotincials; }
+    const vector<double>& get_ñonsumerPotincials() const { return ñonsumerPotincials; }
     void Method_potentials_init();
 
     Method_potentials(int flag, int listNum);
@@ -30,6 +36,8 @@ public:
     void showTable();
     void methodMinElem();
     void showPostavki();
+    void save_example();
+    void generate_transport_task();
     double findMax();
     bool checkDegeneratePlan();
     void calculatePotencials();

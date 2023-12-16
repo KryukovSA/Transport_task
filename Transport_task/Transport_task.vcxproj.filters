@@ -21,9 +21,6 @@
     <ClCompile Include="Qt_ui.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Transport_task.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="SFML_ui.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>

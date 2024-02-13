@@ -142,12 +142,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Method_potentials.cpp" />
+    <ClCompile Include="Parallel.cpp" />
     <ClCompile Include="SFML_ui.cpp" />
     <ClCompile Include="Qt_ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
     <ClInclude Include="Method_potentials.h" />
+    <ClInclude Include="Parallel.h" />
     <ClInclude Include="ui.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

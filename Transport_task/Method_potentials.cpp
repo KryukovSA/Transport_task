@@ -26,7 +26,7 @@ void Method_potentials::solve() {
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     cout << "result minimal cost: " << calculatingСosts() << endl;
     std::cout << "execution time: " << duration.count() << " second." << std::endl;
-    showPostavki();
+    //showPostavki();
     cout << endl;
 }
 int Method_potentials::get_value(int i, int j) {
@@ -321,8 +321,8 @@ void Method_potentials::methodMinElem() {
     vector<int> busyColIndex;
     while (true) {
         a++;
-        for (int i = 0; i < stocks.size(); i++) {
-            if (!count(busyStrIndex.begin(), busyStrIndex.end(), i))
+        for (int i = 0; i < stocks.size(); i++) {//ищем я чейку с самым маленьким тарифом в матрице
+            if (!count(busyStrIndex.begin(), busyStrIndex.end(), i))//если строка не распределена еще (false когда count 0 вернул)
                 for (int j = 0; j < needs.size(); j++) {
                     if (costMat[i][j].get_tarif() <= min && costMat[i][j].get_status() == free_ && !count(busyColIndex.begin(), busyColIndex.end(), j)) {
                         minIndexI = i;//минимум тут  после первого не обновляется
@@ -333,7 +333,7 @@ void Method_potentials::methodMinElem() {
         }
         if (stocks[minIndexI] > needs[minIndexJ] && needs[minIndexJ] != 0) {
             costMat[minIndexI][minIndexJ].set_cargoVolueme(needs[minIndexJ]);
-            stocks[minIndexI] -= needs[minIndexJ];
+            stocks[minIndexI] -= needs[minIndexJ];//уменьшим обьем доступных запасов
             needs[minIndexJ] = 0;
             costMat[minIndexI][minIndexJ].set_status(basic);
             busyColIndex.push_back(minIndexJ);
@@ -343,8 +343,8 @@ void Method_potentials::methodMinElem() {
             stocks[minIndexI] -= needs[minIndexJ];
             needs[minIndexJ] = 0;
             costMat[minIndexI][minIndexJ].set_status(basic);
-            busyColIndex.push_back(minIndexJ);
-            busyStrIndex.push_back(minIndexI);
+            busyColIndex.push_back(minIndexJ);//удовлетворены потребности
+            busyStrIndex.push_back(minIndexI);// запасы кончились и строку более не рассматриваем
         }
         else {
             costMat[minIndexI][minIndexJ].set_cargoVolueme(stocks[minIndexI]);
@@ -655,7 +655,7 @@ void Method_potentials::redistributionSupplies() {
             }
         }
         else {
-            showPostavki();
+            //showPostavki();
             std::cout << "calculating cost: " << calculatingСosts() << endl;
             std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
             break;

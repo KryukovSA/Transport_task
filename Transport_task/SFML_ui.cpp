@@ -8,7 +8,9 @@
 
 int main() {
     srand(static_cast<unsigned int>(time(0)));
-    Method_potentials method_potencials(1, 0); // 1 - из табл тарифы
+    Method_potentials method_potencials(0, 0); // 1 - из табл тарифы
+    //генератор возвращает саму матрицу
+    //и после отработки  последовательного решателя, матрицу инициализируем заново и паралельный решатель применяем
     method_potencials.solve();
   
     //method_potencials.Method_potentials_init();

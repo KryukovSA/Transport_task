@@ -20,6 +20,10 @@ class Method_potentials {
     //vector<vector<Cell>>costMat(countSuppliers, vector<Cell>(countConsumers));
     vector<vector<Cell>>costMat;
 public:
+    Method_potentials() {
+        set_countSuppliers(400);
+        set_countConsumers(400);
+    }
     int get_countConsumers() { return countConsumers; }
     int get_countSuppliers() { return countSuppliers; }
     void set_countConsumers(int countConsumers_) { countConsumers = countConsumers_; }
@@ -29,15 +33,19 @@ public:
     }
     const vector<double>& get_suppliersPotincials() const { return suppliersPotincials; }
     const vector<double>& get_сonsumerPotincials() const { return сonsumerPotincials; }
-    void Method_potentials_init();
+    //void Method_potentials_init();
 
-    Method_potentials(int flag, int listNum);
+    void method_potentials_init(int flag, int listNum, vector<vector<Cell>>& costMat_);
     double getRandomNumber(int min, int max);
     void showTable();
     void methodMinElem();
     void showPostavki();
     void save_example();
-    void generate_transport_task();
+
+
+    vector<vector<Cell>> generate_transport_task();
+
+
     double findMax();
     bool checkDegeneratePlan();
     void calculatePotencials();
@@ -51,6 +59,27 @@ public:
     void addDataForClosingTask();
     void solve();
     int get_value(int i, int j);
+
+
+    //для параллельной
+    //метод минимального эл для электротранспорта
+    void methodMinElem_parallel();
+
+    //солве для параллельной
+    void solve_parallel();
+
+    void redistributionSupplies_parallel();
+
+    void addNullTransportation_parallel();
+
+    //помечает электроперевозки не более чем поставщиков
+    void add_electric(int count);
+    void redistributionSupplies_elctric();
+
+
+
+
+
 };
 
 bool containIndexes(int i, int j, int size, const vector<int>& indexIinChain, const vector<int>& indexJinChain);

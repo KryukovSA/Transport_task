@@ -9,6 +9,7 @@ class Cell {
     double defferncTarifAndPotincials;
     cellStatus status;
     double cargoVolueme; //also see for double type
+    bool electric = false;
 
 public:
     Cell() {
@@ -19,13 +20,14 @@ public:
         cargoVolueme = 0;
     }
 
+    void set_electric() { electric = true; }
     void set_signInHalfChain(statusInHalfChain signInHalfChain_) { signInHalfChain = signInHalfChain_; }
     void set_tarif(double tarif_) { tarif = tarif_; }
     void set_defferncTarifAndPotincials(double defferncTarifAndPotincials_) { defferncTarifAndPotincials = defferncTarifAndPotincials_; }
     void set_status(cellStatus status_) { status = status_; }
     void set_cargoVolueme(int cargoVolueme_) { cargoVolueme = cargoVolueme_; };
 
-
+    bool get_electric() { return electric; }
     double get_tarif() const { return tarif; }
     statusInHalfChain get_signInHalfChain() { return signInHalfChain; }
     double get_defferncTarifAndPotincials() { return defferncTarifAndPotincials; }

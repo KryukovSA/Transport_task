@@ -26,40 +26,48 @@ void Method_potentials::solve() {
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     cout << "result minimal cost: " << calculatingСosts() << endl;
     std::cout << "execution time: " << duration.count() << " second." << std::endl;
-    //showPostavki();
+    showPostavki();
     cout << endl;
 }
+
+
+
+
+
+
+
+
 int Method_potentials::get_value(int i, int j) {
     return costMat[i][j].get_cargoVolueme();
 
 }
 
 
-void Method_potentials::Method_potentials_init() {
-    Book* book = xlCreateXMLBook(); // Создание объекта книги
-    if (book) {
-        if (book->load(L"data.xlsx")) { // Загрузка файла Excel
-            Sheet* sheet = book->getSheet(0); // Получение первого листа
-            if (sheet) {
-
-                int numRows = sheet->lastRow();
-                for (int row = sheet->firstRow()+2; row < numRows; ++row) {
-                    stocks.push_back(sheet->readNum(row, 0));
-                }
-                countSuppliers = stocks.size();
-                cout << "колическтва запасов  " << countSuppliers << endl;
-                // Теперь у вас есть вектор с данными из Excel
-                for (const auto& data : stocks) {
-                    cout << " Value: " << data << endl;
-                }
-            }
-        }
-        book->save(L"example.xlsx");
-        book->release(); // Освобождение памяти, занятой объектом книги
-    }
-
-
-}
+//void Method_potentials::Method_potentials_init() {
+//    Book* book = xlCreateXMLBook(); // Создание объекта книги
+//    if (book) {
+//        if (book->load(L"data.xlsx")) { // Загрузка файла Excel
+//            Sheet* sheet = book->getSheet(0); // Получение первого листа
+//            if (sheet) {
+//
+//                int numRows = sheet->lastRow();
+//                for (int row = sheet->firstRow()+2; row < numRows; ++row) {
+//                    stocks.push_back(sheet->readNum(row, 0));
+//                }
+//                countSuppliers = stocks.size();
+//                cout << "колическтва запасов  " << countSuppliers << endl;
+//                // Теперь у вас есть вектор с данными из Excel
+//                for (const auto& data : stocks) {
+//                    cout << " Value: " << data << endl;
+//                }
+//            }
+//        }
+//        book->save(L"example.xlsx");
+//        book->release(); // Освобождение памяти, занятой объектом книги
+//    }
+//
+//
+//}
 
 void Method_potentials::save_example() {
     // Создаем новую книгу Excel
@@ -101,7 +109,7 @@ void Method_potentials::save_example() {
 
 
 
-Method_potentials::Method_potentials(int flag, int listnum) {
+void Method_potentials::method_potentials_init(int flag, int listnum, vector<vector<Cell>>& costMat_) {
 
     if (flag == 0) {
         Book* book = xlCreateXMLBook(); // Создание объекта книги
@@ -110,70 +118,13 @@ Method_potentials::Method_potentials(int flag, int listnum) {
                 Sheet* sheet = book->getSheet(listnum); // Получение первого листа
                 if (sheet) {
 
-                    //int numRows = sheet->lastRow();
-                    //for (int row = sheet->firstRow() + 2; row < numRows; ++row) {
-                    //    stocks.push_back(sheet->readNum(row, 0));
-                    //}
-                    //countSuppliers = stocks.size();
 
-                    ////количество колонок
-                    //int numCols = 0;
-                    //for (int col = sheet->firstCol() + 1; col < sheet->lastCol(); ++col) {
-                    //    libxl::CellType cellType = sheet->cellType(1, col); // get cell type
-                    //    if (cellType == libxl::CELLTYPE_NUMBER) {
-                    //        numCols++;
-                    //    }
-                    //    else {
-                    //        break;
-                    //    }
-                    //}
+                    costMat = costMat_;
+                    //set_countSuppliers(500);
+                    //set_countConsumers(500);
 
+                    //generate_transport_task();
 
-
-                    //for (int col = sheet->firstCol() + 1; col <= sheet->firstCol() + numCols; ++col) {
-                    //    if (!std::isnan(sheet->readNum(1, col))) {
-                    //        needs.push_back(sheet->readNum(1, col));
-                    //    }
-                    //    else { break; }
-                    //}
-
-                    //countConsumers = needs.size();
-
-                    //countSuppliers = 400;
-                    //countConsumers = 250; //в табл макс 255
-                    //stocks.clear();
-                    //needs.clear();
-                    //
-                    //costMat.resize(countSuppliers, vector<Cell>(countConsumers));
-                    //suppliersPotincials.resize(countSuppliers);
-                    //сonsumerPotincials.resize(countConsumers);
-
-                    set_countSuppliers(500);
-                    set_countConsumers(500);
-
-                    generate_transport_task();
-
-
-
-
-                    // отличие в автогенерации тарифов
-                    
-                /*    for (int i = 0; i < countSuppliers; i++) {
-                        for (int j = 0; j < countConsumers; j++) {
-                            costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(2, 2000)));
-                        }
-                    }*/
-                    //save_example();//сохраняю образец в файл
-                    //cout << "колическтва запасов  " << countSuppliers << endl;
-                    //// Теперь у вас есть вектор с данными из Excel
-                    //for (const auto& data : stocks) {
-                    //    cout << " Value: " << data << endl;
-                    //}
-                    //cout << "колическтво потребностей  " << countConsumers << endl;
-                    //// Теперь у вас есть вектор с данными из Excel
-                    //for (const auto& data : needs) {
-                    //    cout << " Value: " << data << endl;
-                    //}
                 }
             }
             //book->save(L"example.xlsx");
@@ -189,7 +140,8 @@ Method_potentials::Method_potentials(int flag, int listnum) {
             if (book->load(L"data.xlsx")) { // Загрузка файла Excel
                 Sheet* sheet = book->getSheet(listnum); // Получение первого листа
                 if (sheet) {
-
+                    set_countSuppliers(200);
+                    set_countConsumers(200);
                     int numRows = sheet->lastRow();
                     for (int row = sheet->firstRow() + 2; row < numRows; ++row) {
                         stocks.push_back(sheet->readNum(row, 0));
@@ -260,7 +212,7 @@ Method_potentials::Method_potentials(int flag, int listnum) {
     }
 
 }
-void Method_potentials::generate_transport_task() {
+vector<vector<Cell>> Method_potentials::generate_transport_task() {
 
    
     stocks.clear();
@@ -291,7 +243,7 @@ void Method_potentials::generate_transport_task() {
             costMat[i][j].set_tarif(static_cast<int>(getRandomNumber(30, 2000)));
         }
     }
-
+    return costMat;
 }
 
 double Method_potentials::getRandomNumber(int min, int max)
@@ -313,6 +265,8 @@ void Method_potentials::showTable() {
 }
 
 void Method_potentials::methodMinElem() {
+    vector<double> stocks_ = stocks;
+    vector<double> needs_ = needs;
     int min = costMat[0][0].get_tarif();
     int minIndexI = 0;
     int minIndexJ = 0;
@@ -321,9 +275,9 @@ void Method_potentials::methodMinElem() {
     vector<int> busyColIndex;
     while (true) {
         a++;
-        for (int i = 0; i < stocks.size(); i++) {//ищем я чейку с самым маленьким тарифом в матрице
+        for (int i = 0; i < stocks_.size(); i++) {//ищем я чейку с самым маленьким тарифом в матрице
             if (!count(busyStrIndex.begin(), busyStrIndex.end(), i))//если строка не распределена еще (false когда count 0 вернул)
-                for (int j = 0; j < needs.size(); j++) {
+                for (int j = 0; j < needs_.size(); j++) {
                     if (costMat[i][j].get_tarif() <= min && costMat[i][j].get_status() == free_ && !count(busyColIndex.begin(), busyColIndex.end(), j)) {
                         minIndexI = i;//минимум тут  после первого не обновляется
                         minIndexJ = j;
@@ -331,35 +285,35 @@ void Method_potentials::methodMinElem() {
                     }
                 }
         }
-        if (stocks[minIndexI] > needs[minIndexJ] && needs[minIndexJ] != 0) {
-            costMat[minIndexI][minIndexJ].set_cargoVolueme(needs[minIndexJ]);
-            stocks[minIndexI] -= needs[minIndexJ];//уменьшим обьем доступных запасов
-            needs[minIndexJ] = 0;
+        if (stocks_[minIndexI] > needs_[minIndexJ] && needs_[minIndexJ] != 0) {
+            costMat[minIndexI][minIndexJ].set_cargoVolueme(needs_[minIndexJ]);
+            stocks_[minIndexI] -= needs_[minIndexJ];//уменьшим обьем доступных запасов
+            needs_[minIndexJ] = 0;
             costMat[minIndexI][minIndexJ].set_status(basic);
             busyColIndex.push_back(minIndexJ);
         }
-        else if (stocks[minIndexI] == needs[minIndexJ] && needs[minIndexJ] != 0) {
-            costMat[minIndexI][minIndexJ].set_cargoVolueme(needs[minIndexJ]);
-            stocks[minIndexI] -= needs[minIndexJ];
-            needs[minIndexJ] = 0;
+        else if (stocks_[minIndexI] == needs_[minIndexJ] && needs_[minIndexJ] != 0) {
+            costMat[minIndexI][minIndexJ].set_cargoVolueme(needs_[minIndexJ]);
+            stocks_[minIndexI] -= needs_[minIndexJ];
+            needs_[minIndexJ] = 0;
             costMat[minIndexI][minIndexJ].set_status(basic);
             busyColIndex.push_back(minIndexJ);//удовлетворены потребности
             busyStrIndex.push_back(minIndexI);// запасы кончились и строку более не рассматриваем
         }
         else {
-            costMat[minIndexI][minIndexJ].set_cargoVolueme(stocks[minIndexI]);
-            needs[minIndexJ] -= stocks[minIndexI];
-            stocks[minIndexI] = 0;
+            costMat[minIndexI][minIndexJ].set_cargoVolueme(stocks_[minIndexI]);
+            needs_[minIndexJ] -= stocks_[minIndexI];
+            stocks_[minIndexI] = 0;
             costMat[minIndexI][minIndexJ].set_status(basic);
             busyStrIndex.push_back(minIndexI);
         }
         //showPostavki(costMat, stocks.size(), needs.size());
         //cout << endl;
         min = findMax();
-        if (busyStrIndex.size() == stocks.size() && busyColIndex.size() == needs.size()) {
+        if (busyStrIndex.size() == stocks_.size() && busyColIndex.size() == needs_.size()) {
             if (closeTypeTask == false) {//в фиктивные клетки нулевые тарифы(пока тольок если запасы больше)
-                for (int k = 0; k < stocks.size(); k++) {
-                    costMat[k][needs.size() - 1].set_tarif(0);
+                for (int k = 0; k < stocks_.size(); k++) {
+                    costMat[k][needs_.size() - 1].set_tarif(0);
                 }
             }
             return;
@@ -370,12 +324,23 @@ void Method_potentials::methodMinElem() {
 
 void Method_potentials::showPostavki() {
     cout << endl;
-    for (int i = 0; i < countSuppliers; i++)
-    {
-        for (int j = 0; j < countConsumers; j++)
-            std::cout << costMat[i][j].get_cargoVolueme() << "\t";
-        cout << endl;
+    if (countConsumers < 30) {
+        for (int i = 0; i < countSuppliers; i++)
+        {
+            for (int j = 0; j < countConsumers; j++)
+                std::cout << costMat[i][j].get_cargoVolueme() << "\t";
+            cout << endl;
+        }
     }
+    else {
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 15; j++)
+                std::cout << costMat[i][j].get_cargoVolueme() << "\t";
+            cout << endl;
+        }
+    }
+
 }
 
 double Method_potentials::findMax() {
@@ -628,8 +593,8 @@ void Method_potentials::redistributionSupplies() {
             cout << "Cycle not found" << "\n";
             break;
         }
-        int minI;
-        int minJ;
+        int minI = indexIinChain[1];
+        int minJ = indexJinChain[1];
 
         //ищем минимум поставок в помеченных negative клетках
         double minCargoVolume = tmpCostMat[indexIinChain[1]][indexJinChain[1]].get_cargoVolueme();

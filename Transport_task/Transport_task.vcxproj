@@ -113,6 +113,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\include\QtWidgets;C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\include\QtCore;C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\include;C:\Users\serge\OneDrive\Desktop\job\workProgect\SFML-2.5.1\include;C:\libxl-4.2.0\include_cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalOptions>-openmp:llvm %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +132,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\include\QtWidgets;C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\include\QtCore;C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\include;C:\Users\serge\OneDrive\Desktop\job\workProgect\SFML-2.5.1\include;C:\libxl-4.2.0\include_cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalOptions>-openmp:llvm %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

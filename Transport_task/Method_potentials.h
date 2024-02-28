@@ -3,6 +3,7 @@
 #include "Cell.h"
 #include <iostream>
 #include "libxl.h"
+#include <omp.h>
 
 
 
@@ -49,6 +50,7 @@ public:
     double findMax();
     bool checkDegeneratePlan();
     void calculatePotencials();
+
     bool checkOptimal();
     void redistributionSupplies();
     double calculatingСosts();
@@ -66,7 +68,7 @@ public:
     void methodMinElem_parallel();
 
     //солве для параллельной
-    void solve_parallel();
+    void solve_parallel(int electric_count);
 
     void redistributionSupplies_parallel();
 
@@ -76,7 +78,9 @@ public:
     void add_electric(int count);
     void redistributionSupplies_elctric();
 
+    void calculatePotencials_parallel();
 
+    void solve_electric_sequence(int electric_count);
 
 
 

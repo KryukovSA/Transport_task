@@ -212,6 +212,7 @@ void Method_potentials::method_potentials_init(int flag, int listnum, vector<vec
     }
 
 }
+
 vector<vector<Cell>> Method_potentials::generate_transport_task() {
 
    
@@ -396,14 +397,6 @@ void Method_potentials::calculatePotencials() {
 
 
 
-
-
-
-
-
-
-
-
     int counter = 0;
     suppliersPotincials[index] = 0;///////в зависимости от того какой выберем мы можем получать как оптимальный так и нет при одних и тех же вариантах
     //suppliersPotincials[suppliersPotincials.size()/2] = 0;
@@ -493,7 +486,7 @@ void Method_potentials::redistributionSupplies() {
         if (checkDegeneratePlan()) {//вырожденность убирает мб в этом месте не надо
             addNullTransportation();
         }
-        calculatePotencials();//? надо ли
+        //calculatePotencials();//? надо ли
 
         vector<vector<Cell>> tmpCostMat = costMat;
         

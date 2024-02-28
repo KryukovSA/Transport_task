@@ -9,7 +9,7 @@
 int main() {
     int num_procs = omp_get_num_procs();
     std::cout << "Number of available processors: " << num_procs << std::endl;
-    omp_set_num_threads(4);
+    omp_set_num_threads(8);
 
 
     setlocale(LC_ALL, "Russian");

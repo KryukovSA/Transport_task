@@ -278,6 +278,7 @@ void Method_potentials::redistributionSupplies_parallel() {
     int new_cost = 1;
     int colision = 0;
 
+
     while (checkOptimal() != true) {//
 
         if (checkDegeneratePlan()) {//вырожденность убирает мб в этом месте не надо
@@ -292,18 +293,19 @@ void Method_potentials::redistributionSupplies_parallel() {
         int minIndexJ = 0;
 
         //находим клетку с наим разностью c-u-v для начала цикла пересчета
-#pragma omp parallel for collapse(2) shared(tmpCostMat, min, minIndexI, minIndexJ)
+//#pragma omp parallel for collapse(2) shared(tmpCostMat, min, minIndexI, minIndexJ)
+#pragma omp for collapse(2) schedule(static)
         for (int i = 0; i < suppliersPotincials.size(); i++) {
             for (int j = 0; j < сonsumerPotincials.size(); j++) {
                 if (tmpCostMat[i][j].get_status() == free_)
-#pragma omp critical
-                {
+//#pragma omp critical
+              // {
                     if (tmpCostMat[i][j].get_defferncTarifAndPotincials() < min.get_defferncTarifAndPotincials()) {
                         min = tmpCostMat[i][j];
                         minIndexI = i;
                         minIndexJ = j;
                     }
-                }
+               // }
             }
         }
         //build halfchain
@@ -583,7 +585,7 @@ void Method_potentials::solve_parallel(int electric_count) {
     }
     add_electric(electric_count);
     methodMinElem_parallel();
-    showPostavki();//первый опорный план
+    //showPostavki();//первый опорный план
 
     cout << "result cost after minimal elem method: " << calculatingСosts() << endl;
     while (checkDegeneratePlan()) {//вырожденность убирает
@@ -608,7 +610,7 @@ void Method_potentials::solve_electric_sequence(int electric_count) {
     }
     add_electric(electric_count);
     methodMinElem_parallel();
-    showPostavki();//первый опорный план
+    //showPostavki();//первый опорный план
 
     cout << "result cost after minimal elem method: " << calculatingСosts() << endl;
     while (checkDegeneratePlan()) {//вырожденность убирает

@@ -250,7 +250,7 @@ void Method_potentials::redistributionSupplies_elctric() {//последовательная для
         }
         else {
             //showPostavki();
-            std::cout << "calculating cost: " << calculatingСosts() << endl;
+            std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
             std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
             break;
         }
@@ -259,7 +259,7 @@ void Method_potentials::redistributionSupplies_elctric() {//последовательная для
         //меняем статусы обнуленных клеток
         updateStatuses(indexIinChain, indexJinChain);
 
-        std::cout << "calculating cost: " << calculatingСosts() << endl;
+        std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
         new_cost = calculatingСosts();
         if (new_cost == old_cost) {
             colision++;
@@ -450,7 +450,7 @@ void Method_potentials::redistributionSupplies_parallel() {
         //меняем статусы обнуленных клеток
         updateStatuses(indexIinChain, indexJinChain);
 
-        std::cout << "calculating cost: " << calculatingСosts() << endl;
+        std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
         new_cost = calculatingСosts();
         if (new_cost == old_cost) {
             colision++;
@@ -597,7 +597,7 @@ void Method_potentials::solve_parallel(int electric_count) {
     redistributionSupplies_parallel();
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-    cout << "result minimal cost: " << calculatingСosts() << endl;
+    cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
     std::cout << "execution time: " << duration.count() << " second." << std::endl;
     showPostavki();
     cout << endl;
@@ -621,7 +621,7 @@ void Method_potentials::solve_electric_sequence(int electric_count) {
     redistributionSupplies_elctric();
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-    cout << "result minimal cost: " << calculatingСosts() << endl;
+    cout << "result minimal cost: " << fixed << static_cast<long long>(calculatingСosts()) << endl;
     std::cout << "execution time: " << duration.count() << " second." << std::endl;
     showPostavki();
     cout << endl;

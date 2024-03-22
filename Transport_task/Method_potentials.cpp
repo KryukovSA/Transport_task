@@ -483,10 +483,9 @@ void Method_potentials::redistributionSupplies() {
 
     while (checkOptimal() != true) {//
 
-        if (checkDegeneratePlan()) {//вырожденность убирает мб в этом месте не надо
+        if (checkDegeneratePlan()) {//вырожденность убирает, тут необходимо? 
             addNullTransportation();
         }
-        //calculatePotencials();//? надо ли
 
         vector<vector<Cell>> tmpCostMat = costMat;
         
@@ -635,14 +634,14 @@ void Method_potentials::redistributionSupplies() {
             break;
         }
         
-  /*      for (int i = 0; i < suppliersPotincials.size(); i++) {
+        for (int i = 0; i < suppliersPotincials.size(); i++) {
             cout << suppliersPotincials[i] << " ";
         }
         cout << endl;
 
         for (int i = 0; i < сonsumerPotincials.size(); i++)
             cout << сonsumerPotincials[i] << " ";
-        cout << endl;*/
+        cout << endl;
         calculatePotencials();
     }
 }

@@ -8,7 +8,7 @@
 
 //метод минимального эл для электротранспортаЪ
 //сначала  смотрим статусы и заполняем что с электро потом стандартный
-void Method_potentials::methodMinElem_parallel() {
+void Method_potentials::methodMinElem_electric() {
     vector<double> stocks_ = stocks;
     vector<double> needs_ = needs;
     int min = costMat[0][1].get_tarif();
@@ -111,7 +111,7 @@ void Method_potentials::redistributionSupplies_elctric() {//последовательная для
     while (checkOptimal() != true) {//
 
         if (checkDegeneratePlan()) {//вырожденность убирает мб в этом месте не надо
-            addNullTransportation_parallel();
+            addNullTransportation();
             //calculatePotencials();//? надо ли
         }
         
@@ -282,8 +282,8 @@ void Method_potentials::redistributionSupplies_parallel() {
     while (checkOptimal() != true) {//
 
         if (checkDegeneratePlan()) {//вырожденность убирает мб в этом месте не надо
-            addNullTransportation_parallel();
-        //calculatePotencials_parallel();//? надо ли
+            addNullTransportation();
+        //calculatePotencials_parallel();//
         }
         vector<vector<Cell>> tmpCostMat = costMat;
 
@@ -294,7 +294,7 @@ void Method_potentials::redistributionSupplies_parallel() {
 
         //находим клетку с наим разностью c-u-v для начала цикла пересчета
 //#pragma omp parallel for collapse(2) shared(tmpCostMat, min, minIndexI, minIndexJ)
-#pragma omp for collapse(2) schedule(static)
+//#pragma omp parallel for collapse(2) schedule(static)
         for (int i = 0; i < suppliersPotincials.size(); i++) {
             for (int j = 0; j < сonsumerPotincials.size(); j++) {
                 if (tmpCostMat[i][j].get_status() == free_)
@@ -332,7 +332,6 @@ void Method_potentials::redistributionSupplies_parallel() {
             countCycles++;
             int flag = 0;
             //по вертикали в выбранном столбце ищем нужную строку
-//#pragma omp parallel for shared(tmpCostMat, currentIndexI, currentIndexJ, flag) private(i) schedule(static) 
             for (i; i < suppliersPotincials.size(); i++) {
                 if (tmpCostMat[i][currentIndexJ].get_status() == basic && i != currentIndexI && 
                     (!containIndexes(i, currentIndexJ, indexIinChain.size(), indexIinChain, indexJinChain) ||
@@ -364,7 +363,6 @@ void Method_potentials::redistributionSupplies_parallel() {
             }
             flag = 0;
             //по Горизонтали в выбрангой строке ищем нужный столбец
-//#pragma omp parallel for shared(tmpCostMat, currentIndexI, currentIndexJ, flag) private(j) schedule(static)
             for (j; j < сonsumerPotincials.size(); j++) {
 
                 if (tmpCostMat[currentIndexI][j].get_status() == basic && j != currentIndexJ && (!containIndexes(currentIndexI, j, indexIinChain.size(), indexIinChain, indexJinChain) || (currentIndexI == minIndexI && j == minIndexJ))) {
@@ -464,117 +462,6 @@ void Method_potentials::redistributionSupplies_parallel() {
 
 }
 
-//параллельный метод поиска цикла
-void Method_potentials::addNullTransportation_parallel() {
-    vector<int> ignoreIndexI;//клетки которые однажды образовали цикл мы не рассматриваем
-    vector<int> ignoreIndexJ;
-
-
-    while (checkDegeneratePlan()) {
-        int cellIndexI = 0;//индексы клетки которую хотим добавить в базис с нулеволй перевозкой.
-        int cellIndexJ = 0;
-        for (int k = 0; k < countSuppliers; k++) {//ищем первую попавшуюся клетку с 0 перевозкой 
-            bool signal = 0;
-            for (int m = 0; m < countConsumers; m++) {
-                if (costMat[k][m].get_cargoVolueme() == 0 && costMat[k][m].get_status() == free_ && !ignoreCell(k, m, ignoreIndexI, ignoreIndexJ)) {
-                    cellIndexI = k;
-                    cellIndexJ = m;//выделим ее как кандидата
-                    costMat[cellIndexI][cellIndexJ].set_status(basic);//чтоб поиск не сбивался допускаем ее базовой(потом если что отменим)
-                    signal = 1;
-                    break;
-                }
-            }
-            if (signal == 1)
-                break;
-
-        }
-
-
-        vector<int> indexIinChain;//номер строки для ячейки цикла
-        vector<int> indexJinChain;//номер столбца
-        indexIinChain.push_back(cellIndexI);//запоминаем индексы начала для поиска цикла
-        indexJinChain.push_back(cellIndexJ);
-        int currentIndexI = cellIndexI;//
-        int currentIndexJ = cellIndexJ;
-        int countCycles = 0;
-        int i = 0;
-        int j = 0;
-        int counter = 0; //|| indexIinChain.size() <= 4) && counter < 5 )
-        //в игнорируемых все клетки этого столбца
-        while ((((currentIndexI != cellIndexI && currentIndexJ != cellIndexJ) || indexIinChain.size() < 2) && counter < 5) && countCycles < countSuppliers * countConsumers) { //верно ли условие того что цикл не найден. сначала || было вместо &&
-
-            countCycles++;
-            int flag = 0;
-            if (currentIndexI == cellIndexI && currentIndexJ == cellIndexJ && indexIinChain.size() <= 4) {//количество попаданий в начальную точку.
-                counter++;
-            }
-            //по вертикали в выбранном столбце ищем нужную строку
-            for (i; i < countSuppliers; i++) {
-                if (costMat[i][currentIndexJ].get_status() == basic && i != currentIndexI && (!containIndexes(i, currentIndexJ, indexIinChain.size(), indexIinChain, indexJinChain) || (i == cellIndexI && currentIndexJ == cellIndexJ))) {//
-
-                    //if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == positive)
-                    //    costMat[i][currentIndexJ].set_signInHalfChain(negative);//ранее просто это было
-                    //else
-                    //    costMat[currentIndexI][j].set_signInHalfChain(positive);
-                    indexIinChain.push_back(i);//запоминаем индексы клетки (номер строки)
-                    indexJinChain.push_back(currentIndexJ);
-                    currentIndexI = i;
-                    flag = 1;
-                    j = 0;
-                    break;
-                }
-            }
-            if (flag == 0)       //если в столбце не нашли клетку для продолжения цикла, 
-            {     // то в поисках другого столбца, а текущий удалим
-                if (indexJinChain.size() == 1 || indexIinChain.size() == 1) {//чтобы из пустого вектора не удаляли
-                    countCycles = countSuppliers * countConsumers;
-                    break;
-                }
-                j = indexJinChain.back() + 1;//пропусти элемент на котором цикл сбился
-                indexJinChain.erase(indexJinChain.end() - 1);
-                indexIinChain.erase(indexIinChain.end() - 1);//?
-                currentIndexJ = indexJinChain.back();
-            }
-            flag = 0;
-            //по Горизонтали в выбрангой строке ищем нужный столбец
-            for (j; j < countConsumers; j++) {
-                if (costMat[currentIndexI][j].get_status() == basic && j != currentIndexJ && (!containIndexes(currentIndexI, j, indexIinChain.size(), indexIinChain, indexJinChain) || (currentIndexI == cellIndexI && j == cellIndexJ))) {//
-                    //if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == negative)
-                    //    costMat[currentIndexI][j].set_signInHalfChain(positive);//ранее просто это было
-                    //else
-                    //    costMat[currentIndexI][j].set_signInHalfChain(negative);
-                    indexIinChain.push_back(currentIndexI);//запоминаем индексы клетки 
-                    indexJinChain.push_back(j);//запоминаем номер столбца
-                    currentIndexJ = j;
-                    flag = 1;
-                    i = 0;
-                    break;
-                }
-            }
-            if (flag == 0)       //если в строке не нашли клетку для продолжения цикла, 
-            {     // то в поисках другой строки, а текущий удалим
-                if (indexIinChain.size() == 1 || indexJinChain.size() == 1) {//indexIinChain.empty()   чтобы из пустого вектора не удаляли
-                    countCycles = countSuppliers * countConsumers;
-                    break;
-                }
-                i = indexIinChain.back() + 1;//пропусти элемент на котором цикл сбился
-                indexIinChain.erase(indexIinChain.end() - 1);
-                indexJinChain.erase(indexJinChain.end() - 1);//?
-                currentIndexI = indexIinChain.back();
-
-            }
-        }
-        //countCycles == countSuppliers * countConsumers ||
-        if (countCycles >= countSuppliers * countConsumers || ((currentIndexI == cellIndexI && currentIndexJ == cellIndexJ) && indexIinChain.size() <= 4)) { //цикл не найден/ пришли в исходную клетку при длинне цепочки меньше 5   //countSuppliers * countConsumers
-            costMat[cellIndexI][cellIndexJ].set_status(basic);//добавляем нулевую перевозку                                                      потому что если бы она была >5 то это значит что просто цикл замкнулся
-        }
-        else {
-            costMat[cellIndexI][cellIndexJ].set_status(free_);
-            ignoreIndexI.push_back(cellIndexI);
-            ignoreIndexJ.push_back(cellIndexJ);
-        }
-    }
-}
 
 //солве для параллельной
 //дрцгой минимальный применяем
@@ -584,7 +471,7 @@ void Method_potentials::solve_parallel(int electric_count) {
         closeTypeTask = false;
     }
     add_electric(electric_count);
-    methodMinElem_parallel();
+    methodMinElem_electric();
     //showPostavki();//первый опорный план
 
     cout << "result cost after minimal elem method: " << calculatingСosts() << endl;
@@ -597,7 +484,7 @@ void Method_potentials::solve_parallel(int electric_count) {
     redistributionSupplies_parallel();
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-    cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
+    cout << "result minimal cost: " << fixed << static_cast<long long>(calculatingСosts()) << endl;
     std::cout << "execution time: " << duration.count() << " second." << std::endl;
     showPostavki();
     cout << endl;
@@ -609,7 +496,7 @@ void Method_potentials::solve_electric_sequence(int electric_count) {
         closeTypeTask = false;
     }
     add_electric(electric_count);
-    methodMinElem_parallel();
+    methodMinElem_electric();
     //showPostavki();//первый опорный план
 
     cout << "result cost after minimal elem method: " << calculatingСosts() << endl;

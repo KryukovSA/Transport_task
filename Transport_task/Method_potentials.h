@@ -22,8 +22,8 @@ class Method_potentials {
     vector<vector<Cell>>costMat;
 public:
     Method_potentials() {
-        set_countSuppliers(400);
-        set_countConsumers(400);
+        set_countSuppliers(500);
+        set_countConsumers(500);
     }
     int get_countConsumers() { return countConsumers; }
     int get_countSuppliers() { return countSuppliers; }
@@ -65,17 +65,17 @@ public:
 
     //для параллельной
     //метод минимального эл для электротранспорта
-    void methodMinElem_parallel();
+    void methodMinElem_electric();
 
     //солве для параллельной
     void solve_parallel(int electric_count);
 
+    //работает с параллельным вычисл потенциалов
     void redistributionSupplies_parallel();
-
-    void addNullTransportation_parallel();
 
     //помечает электроперевозки не более чем поставщиков
     void add_electric(int count);
+
     void redistributionSupplies_elctric();
 
     void calculatePotencials_parallel();

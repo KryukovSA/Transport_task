@@ -9,32 +9,29 @@
 int main() {
     int num_procs = omp_get_num_procs();
     std::cout << "Number of available processors: " << num_procs << std::endl;
-    omp_set_num_threads(8);
+    omp_set_num_threads(4);
 
 
     setlocale(LC_ALL, "Russian");
     srand(static_cast<unsigned int>(time(0)));
     Method_potentials method_potencials;
-    int electric_count = 2;
+    int electric_count = 15;
     int flag = 0;// 1 - из табл тарифы     0 - автогенерация
     vector<vector<Cell>> main_matrix;
     if(flag == 0)
         main_matrix = method_potencials.generate_transport_task();
 
 
-    method_potencials.method_potentials_init(flag, 0, main_matrix); 
+   //method_potencials.method_potentials_init(flag, 8, main_matrix); 
+   //method_potencials.solve();
 
-    //генератор возвращает саму матрицу
-    //и после отработки  последовательного решателя, матрицу инициализируем заново и паралельный решатель применяем
-    /*method_potencials.solve();
-
-    method_potencials.method_potentials_init(flag, 0, main_matrix);*/
+    method_potencials.method_potentials_init(flag, 7, main_matrix);
     method_potencials.solve_electric_sequence(electric_count);
 
-    method_potencials.method_potentials_init(flag, 0, main_matrix);
+    method_potencials.method_potentials_init(flag, 7, main_matrix);
     method_potencials.solve_parallel(electric_count);
   
-    //method_potencials.Method_potentials_init();
+    //method_potencials.method_potentials_init();
 
     //method_potencials.solve();
 

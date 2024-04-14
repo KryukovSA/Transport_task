@@ -2,7 +2,6 @@
 #include <fstream>
 #include<numeric>
 #include <chrono>
-#include "Parallel.h"
 // может с наследованием че придкмать чтобы типо новый конструкор где количество  и пункты с электрогрузовиками задается переопредлелить указанные ниже методы
 
 
@@ -277,7 +276,7 @@ void Method_potentials::redistributionSupplies_parallel() {
     int old_cost = 0;
     int new_cost = 1;
     int colision = 0;
-
+    int electric_make_zero = 0;//сколько электроперевозок занулились(уменьшился критерий)
 
     while (checkOptimal() != true) {//
 
@@ -411,22 +410,27 @@ void Method_potentials::redistributionSupplies_parallel() {
         }
 
         //-------------------------------не дать занулить электроперевозку--------------------------------------------
+        
         for (int k = 0; k < indexIinChain.size(); k++) { //если занулятся несколько и одна из них с электроперевозкой
             if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative && tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_electric() == true &&
                 tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() == tmpCostMat[minI][minJ].get_cargoVolueme()) {
                 std::cout << "клетка с электроперевозкой занулится" << endl;
-                break;
+                cout << "критерий уменьшился" << endl;
+                electric_make_zero++;
+                //break;
             }
         }
 
-        if (costMat[minI][minJ].get_electric() == true) {
-            std::cout << "calculating cost: " << calculatingСosts() << endl;
-            std::cout << "зануление клетки с электроперевозкой недопустимо" << endl;
-            break;
-        }
+        //if (costMat[minI][minJ].get_electric() == true) {
+        //    std::cout << "calculating cost: " << calculatingСosts() << endl;
+        //    std::cout << "зануление клетки с электроперевозкой недопустимо" << endl;
+        //    break;
+        //}
 
         //------------------------------------------------------------------------------------
         //перераспределяем поставки в результирующую матрицу
+
+
         if (minCargoVolume != 0) {
             for (int k = 0; k < indexIinChain.size() - 1; k++) {// -1 тк клетка начала цикла дважды повторяется
                 if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative) {//можно улучшить чтоб шел по нечетным и все
@@ -442,6 +446,7 @@ void Method_potentials::redistributionSupplies_parallel() {
             //showPostavki();
             std::cout << "calculating cost: " << calculatingСosts() << endl;
             std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
+            cout << "итого критерий уменьшился на: " << electric_make_zero << endl;
             break;
         }
         //showPostavki();//----------------------------------------------
@@ -449,6 +454,8 @@ void Method_potentials::redistributionSupplies_parallel() {
         updateStatuses(indexIinChain, indexJinChain);
 
         std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        
+
         new_cost = calculatingСosts();
         if (new_cost == old_cost) {
             colision++;
@@ -465,12 +472,13 @@ void Method_potentials::redistributionSupplies_parallel() {
 
 //солве для параллельной
 //дрцгой минимальный применяем
-void Method_potentials::solve_parallel(int electric_count) {
+void Method_potentials::solve_parallel(int electric_count, double  economic_koef) {
     if (!checkCloseTypeTask()) {//если не закрытая
         addDataForClosingTask();
         closeTypeTask = false;
     }
-    add_electric(electric_count);
+    cout << "коэфицент " << economic_koef << endl;
+    add_electric(electric_count, economic_koef);
     methodMinElem_electric();
     //showPostavki();//первый опорный план
 
@@ -490,12 +498,12 @@ void Method_potentials::solve_parallel(int electric_count) {
     cout << endl;
 }
 
-void Method_potentials::solve_electric_sequence(int electric_count) {
+void Method_potentials::solve_electric_sequence(int electric_count, double economic_koef) {
     if (!checkCloseTypeTask()) {//если не закрытая
         addDataForClosingTask();
         closeTypeTask = false;
     }
-    add_electric(electric_count);
+    add_electric(electric_count, economic_koef);
     methodMinElem_electric();
     //showPostavki();//первый опорный план
 
@@ -516,12 +524,14 @@ void Method_potentials::solve_electric_sequence(int electric_count) {
 
 //добавление электроперевозок в задачу
 //в рандомных ячейках флаг и тариф
-void Method_potentials::add_electric(int count) {
-    if (count > countSuppliers)
+void Method_potentials::add_electric(int count, double economic_koef) {
+    if (count > countSuppliers) {
         cout << "\n неверное количество электрогрузовиков \n";
+        return;
+    }
     for (int i = 0; i < count; i++) {
         costMat[i][i*2].set_electric();
-        costMat[i][i*2].set_tarif(costMat[i][i].get_tarif()/2);//тариф на 2 делим по условию задумано
+        costMat[i][i*2].set_tarif(costMat[i][i].get_tarif()* economic_koef);//тариф на 2 делим по условию задумано
     }
     
 }

@@ -15,28 +15,144 @@ int main() {
     setlocale(LC_ALL, "Russian");
     srand(static_cast<unsigned int>(time(0)));
     Method_potentials method_potencials;
-    int electric_count = 15;
+    int electric_count = 5;//количество не более половины числа потербителей например
     int flag = 0;// 1 - из табл тарифы     0 - автогенерация
+
+
+    if (flag == 0) {
+        int a, b;
+        cout << "введите количество поставщиков" << endl;
+        cin >> a;
+        method_potencials.set_countSuppliers(a);
+        cout << "введите количество потребителей" << endl;
+        cin >> b;
+        method_potencials.set_countSuppliers(b);
+    }
+    float econom_parametr = 0.6;
+    cout << "С каким параметром экономической выгоды вы хотите увидеть оптимальный план ? 1 если без него" << endl;
+    cin >> econom_parametr;
+
+    vector<vector<int>> result_volumes(method_potencials.get_countSuppliers(), std::vector<int>(method_potencials.get_countConsumers()));
     vector<vector<Cell>> main_matrix;
     if(flag == 0)
         main_matrix = method_potencials.generate_transport_task();
 
 
-   //method_potencials.method_potentials_init(flag, 8, main_matrix); 
-   //method_potencials.solve();
+   method_potencials.method_potentials_init(flag, 8, main_matrix); 
+   method_potencials.solve();
+   if (econom_parametr == 1) {
+       for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+           for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+               result_volumes[i][j] = method_potencials.get_value(i, j);
+           }
+       }
+   }
+    //method_potencials.method_potentials_init(flag, 7, main_matrix);
+    //method_potencials.solve_electric_sequence(electric_count);
+   
+    method_potencials.method_potentials_init(flag, 7, main_matrix);
+    method_potencials.solve_parallel(electric_count, 0.9);
+    if (econom_parametr == 0.9) {
+        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+                result_volumes[i][j] = method_potencials.get_value(i, j);
+            }
+        }
+    }
 
     method_potencials.method_potentials_init(flag, 7, main_matrix);
-    method_potencials.solve_electric_sequence(electric_count);
+    method_potencials.solve_parallel(electric_count, 0.8);
+    if (econom_parametr == 0.8) {
+        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+                result_volumes[i][j] = method_potencials.get_value(i, j);
+            }
+        }
+    }
 
     method_potencials.method_potentials_init(flag, 7, main_matrix);
-    method_potencials.solve_parallel(electric_count);
-  
+    method_potencials.solve_parallel(electric_count, 0.7);
+    if (econom_parametr == 0.7) {
+        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+                result_volumes[i][j] = method_potencials.get_value(i, j);
+            }
+        }
+    }
+
+    method_potencials.method_potentials_init(flag, 7, main_matrix);
+    method_potencials.solve_parallel(electric_count, 0.6);
+    if (econom_parametr == 0.6) {
+        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+                result_volumes[i][j] = method_potencials.get_value(i, j);
+            }
+        }
+    }
+
+    method_potencials.method_potentials_init(flag, 7, main_matrix);
+    method_potencials.solve_parallel(electric_count, 0.5);
+    if (econom_parametr == 0.5) {
+        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+                result_volumes[i][j] = method_potencials.get_value(i, j);
+            }
+        }
+    }
+
+
+    method_potencials.method_potentials_init(flag, 7, main_matrix);
+    method_potencials.solve_parallel(electric_count, 0.4);
+    if (econom_parametr == 0.4) {
+        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+                result_volumes[i][j] = method_potencials.get_value(i, j);
+            }
+        }
+    }
+
     //method_potencials.method_potentials_init();
 
     //method_potencials.solve();
+    cout << "Вычисления завершены " << endl << endl << endl;
+    while (true) {
+        cout << "Введите диапазоны значений для отображения оптимальных объемов например ( 100 - 110) (10 - 30) ";//потом он вводит напрмиер ( 100 - 110) (10 - 30)
+        std::string input;
+        std::cin.ignore();//( 40 - 49) (40 - 49)
+        std::getline(std::cin >> std::ws, input);
+        if (input == "exit") {
+            std::cout << "Программа завершена." << std::endl;
+            break; // Выход из цикла
+        }
+        std::pair<int, int> rowRange, colRange;
+        std::stringstream ss(input);
+        char delimiter;
+        int rowLower, rowUpper, colLower, colUpper;
+
+        ss >> delimiter >> rowLower >> delimiter >> rowUpper >> delimiter;
+        rowRange = std::make_pair(rowLower, rowUpper);
+
+        // Чтение диапазона столбцов
+        ss >> delimiter >> colLower >> delimiter >> colUpper >> delimiter;
+        colRange = std::make_pair(colLower, colUpper);
+        std::cout << "Диапазон для строк: " << rowRange.first << " - " << rowRange.second << std::endl;
+        std::cout << "Диапазон для столбцов: " << colRange.first << " - " << colRange.second << std::endl;
+
+        std::cout << "Подматрица, соответствующая диапазонам:\n";
+        for (int i = rowRange.first; i <= rowRange.second; ++i) {
+            for (int j = colRange.first; j <= colRange.second; ++j) {
+                std::cout << result_volumes[i][j] << "\t";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << "Введите 'exit', чтобы выйти из программы, или продолжите вводить диапазоны." << std::endl;
+    }
+
+
+
+
 
     //sf::RenderWindow window(sf::VideoMode(2500, 2000), "Transport Task Solver");
-
     //sf::Font font;
     //if (!font.loadFromFile("Arial.ttf")) {
     //    return EXIT_FAILURE;

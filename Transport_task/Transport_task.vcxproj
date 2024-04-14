@@ -120,7 +120,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>Qt5Core.lib;Qt5Widgets.lib;sfml-system.lib;sfml-graphics.lib;sfml-window.lib;sfml-network.lib;libxl.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\bin;C:\Users\serge\OneDrive\Desktop\job\workProgect\SFML-2.5.1\lib;C:\libxl-4.2.0\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\bin;C:\Users\serge\OneDrive\Desktop\job\workProgect\SFML-2.5.1\lib;C:\libxl-4.2.0\lib64;C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,19 +141,19 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>Qt5Core.lib;Qt5Widgets.lib;sfml-system.lib;sfml-graphics.lib;sfml-window.lib;sfml-network.lib;libxl.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\bin;C:\Users\serge\OneDrive\Desktop\job\workProgect\SFML-2.5.1\lib;C:\libxl-4.2.0\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\bin;C:\Users\serge\OneDrive\Desktop\job\workProgect\SFML-2.5.1\lib;C:\libxl-4.2.0\lib64;C:\Qt\Qt5.14.2\5.14.2\winrt_x64_msvc2017\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Method_potentials.cpp" />
     <ClCompile Include="Parallel.cpp" />
-    <ClCompile Include="SFML_ui.cpp" />
     <ClCompile Include="Qt_ui.cpp" />
+    <ClCompile Include="sfml2.cpp" />
+    <ClCompile Include="SFML_ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
     <ClInclude Include="Method_potentials.h" />
-    <ClInclude Include="Parallel.h" />
     <ClInclude Include="ui.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

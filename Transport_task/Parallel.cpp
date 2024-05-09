@@ -225,12 +225,12 @@ void Method_potentials::redistributionSupplies_elctric() {//последовательная для
         for (int k = 0; k < indexIinChain.size(); k++) { //если занулятся несколько и одна из них с электроперевозкой
             if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative && tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_electric() == true &&
                 tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() == tmpCostMat[minI][minJ].get_cargoVolueme()) {
-                std::cout << "клетка с электроперевозкой занулится" << endl;
+        //        std::cout << "клетка с электроперевозкой занулится" << endl;
                 break;
             }
         }
         if (costMat[minI][minJ].get_electric() == true) {
-            std::cout << "calculating cost: " << calculatingСosts() << endl;
+        //    std::cout << "calculating cost: " << calculatingСosts() << endl;
             std::cout << "зануление клетки с электроперевозкой недопустимо" << endl;
             break;
         }
@@ -249,8 +249,8 @@ void Method_potentials::redistributionSupplies_elctric() {//последовательная для
         }
         else {
             //showPostavki();
-            std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
-            std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
+        //    std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        //   std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
             break;
         }
 
@@ -414,18 +414,18 @@ void Method_potentials::redistributionSupplies_parallel() {
         for (int k = 0; k < indexIinChain.size(); k++) { //если занулятся несколько и одна из них с электроперевозкой
             if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative && tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_electric() == true &&
                 tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() == tmpCostMat[minI][minJ].get_cargoVolueme()) {
-                std::cout << "клетка с электроперевозкой занулится" << endl;
-                cout << "критерий уменьшился" << endl;
+                //std::cout << "клетка с электроперевозкой занулится" << endl;
+                //cout << "критерий уменьшился" << endl;
                 electric_make_zero++;
                 //break;
             }
         }
 
-        //if (costMat[minI][minJ].get_electric() == true) {
+        if (costMat[minI][minJ].get_electric() == true) {
         //    std::cout << "calculating cost: " << calculatingСosts() << endl;
         //    std::cout << "зануление клетки с электроперевозкой недопустимо" << endl;
-        //    break;
-        //}
+            break;
+        }
 
         //------------------------------------------------------------------------------------
         //перераспределяем поставки в результирующую матрицу
@@ -444,9 +444,9 @@ void Method_potentials::redistributionSupplies_parallel() {
         }
         else {
             //showPostavki();
-            std::cout << "calculating cost: " << calculatingСosts() << endl;
-            std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
-            cout << "итого критерий уменьшился на: " << electric_make_zero << endl;
+        //    std::cout << "calculating cost: " << calculatingСosts() << endl;
+        //    std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
+        //    cout << "итого критерий уменьшился на: " << electric_make_zero << endl;
             break;
         }
         //showPostavki();//----------------------------------------------
@@ -477,12 +477,12 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
         addDataForClosingTask();
         closeTypeTask = false;
     }
-    cout << "коэфицент " << economic_koef << endl;
+    cout << "стоимость с экономичеким коэфицентом: " << economic_koef << endl;
     add_electric(electric_count, economic_koef);
     methodMinElem_electric();
     //showPostavki();//первый опорный план
 
-    cout << "result cost after minimal elem method: " << calculatingСosts() << endl;
+    //cout << "result cost after minimal elem method: " << calculatingСosts() << endl;
     while (checkDegeneratePlan()) {//вырожденность убирает
         addNullTransportation();
     }
@@ -494,7 +494,7 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     cout << "result minimal cost: " << fixed << static_cast<long long>(calculatingСosts()) << endl;
     std::cout << "execution time: " << duration.count() << " second." << std::endl;
-    showPostavki();
+    //showPostavki();
     cout << endl;
 }
 
@@ -518,7 +518,7 @@ void Method_potentials::solve_electric_sequence(int electric_count, double econo
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     cout << "result minimal cost: " << fixed << static_cast<long long>(calculatingСosts()) << endl;
     std::cout << "execution time: " << duration.count() << " second." << std::endl;
-    showPostavki();
+    //showPostavki();
     cout << endl;
 }
 

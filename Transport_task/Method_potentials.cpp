@@ -13,9 +13,9 @@ void Method_potentials::solve() {
         closeTypeTask = false;
     }
     methodMinElem();
-    showPostavki();//первый опорный план
+    //showPostavki();//первый опорный план
 
-    cout << "result cost after minimal elem method: " << static_cast<long long>(calculatingСosts()) << endl;
+    //cout << "result cost after minimal elem method: " << static_cast<long long>(calculatingСosts()) << endl;
     while (checkDegeneratePlan()) {//вырожденность убирает
         addNullTransportation();
     }
@@ -24,9 +24,10 @@ void Method_potentials::solve() {
     redistributionSupplies();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
+    cout << "стоимость перевозок без использования электрогрузовиков" << endl;
     cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
-    std::cout << "execution time: " << duration.count() << " second." << std::endl;
-    showPostavki();
+    //std::cout << "execution time: " << duration.count() << " second." << std::endl;
+    //showPostavki();
     cout << endl;
 }
 
@@ -613,8 +614,8 @@ void Method_potentials::redistributionSupplies() {
         }
         else {
             //showPostavki();
-            std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
-            std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
+        //    std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        //    std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
             break;
         }
 
@@ -624,7 +625,7 @@ void Method_potentials::redistributionSupplies() {
         //меняем статусы обнуленных клеток
         updateStatuses(indexIinChain, indexJinChain);
  
-        std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        //std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
         new_cost = calculatingСosts();
         if (new_cost == old_cost) {
             colision++;

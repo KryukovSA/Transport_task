@@ -372,7 +372,7 @@ bool Method_potentials::checkDegeneratePlan() {
 }
 
 void Method_potentials::calculatePotencials() {
-    double identefikator = -100.1786;
+    const double identefikator = -100.1786;
 
     for (int i = 0; i < suppliersPotincials.size(); i++) {
         suppliersPotincials[i] = identefikator;
@@ -396,11 +396,8 @@ void Method_potentials::calculatePotencials() {
         }
     }
 
-
-
     int counter = 0;
-    suppliersPotincials[index] = 0;///////в зависимости от того какой выберем мы можем получать как оптимальный так и нет при одних и тех же вариантах
-    //suppliersPotincials[suppliersPotincials.size()/2] = 0;
+    suppliersPotincials[index] = 0;
     while (counter < suppliersPotincials.size() - 1) {
         for (int i = 0; i < suppliersPotincials.size(); i++) {
             if (suppliersPotincials[i] != identefikator) {
@@ -413,8 +410,10 @@ void Method_potentials::calculatePotencials() {
             if (suppliersPotincials[i] == identefikator) {
                 for (int j = 0; j < сonsumerPotincials.size(); j++)
                 {
-                    if (costMat[i][j].get_status() == basic && сonsumerPotincials[j] != identefikator)
+                    if (costMat[i][j].get_status() == basic && сonsumerPotincials[j] != identefikator) {
                         suppliersPotincials[i] = costMat[i][j].get_tarif() - сonsumerPotincials[j];
+                        break;
+                    }
                 }
             }
         }
@@ -698,15 +697,13 @@ void Method_potentials::addNullTransportation() {
         vector<int> indexJinChain;//номер столбца
         indexIinChain.push_back(cellIndexI);//запоминаем индексы начала для поиска цикла
         indexJinChain.push_back(cellIndexJ);
-        int currentIndexI = cellIndexI;//
+        int currentIndexI = cellIndexI;
         int currentIndexJ = cellIndexJ;
         int countCycles = 0;
         int i = 0;
         int j = 0;
-        int counter = 0; //|| indexIinChain.size() <= 4) && counter < 5 )
-        //в игнорируемых все клетки этого столбца
-        while ((((currentIndexI != cellIndexI && currentIndexJ != cellIndexJ) || indexIinChain.size()<2) && counter < 5) && countCycles < countSuppliers * countConsumers) { //верно ли условие того что цикл не найден. сначала || было вместо &&
-
+        int counter = 0;
+        while ((((currentIndexI != cellIndexI && currentIndexJ != cellIndexJ) || indexIinChain.size()<2) && counter < 5) && countCycles < countSuppliers * countConsumers) {
             countCycles++;
             int flag = 0;
             if (currentIndexI == cellIndexI && currentIndexJ == cellIndexJ && indexIinChain.size() <= 4) {//количество попаданий в начальную точку.
@@ -715,12 +712,7 @@ void Method_potentials::addNullTransportation() {
             //по вертикали в выбранном столбце ищем нужную строку
             for (i; i < countSuppliers; i++) {
                 if (costMat[i][currentIndexJ].get_status() == basic && i != currentIndexI && (!containIndexes(i, currentIndexJ, indexIinChain.size(), indexIinChain, indexJinChain) || (i == cellIndexI && currentIndexJ == cellIndexJ))) {//
-
-                    //if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == positive)
-                    //    costMat[i][currentIndexJ].set_signInHalfChain(negative);//ранее просто это было
-                    //else
-                    //    costMat[currentIndexI][j].set_signInHalfChain(positive);
-                    indexIinChain.push_back(i);//запоминаем индексы клетки (номер строки)
+                    indexIinChain.push_back(i); //запоминаем индексы клетки (номер строки)
                     indexJinChain.push_back(currentIndexJ);
                     currentIndexI = i;
                     flag = 1;
@@ -734,19 +726,15 @@ void Method_potentials::addNullTransportation() {
                     countCycles = countSuppliers * countConsumers;
                     break;
                 }
-                j = indexJinChain.back() + 1;//пропусти элемент на котором цикл сбился
+                j = indexJinChain.back() + 1;//пропустим элемент на котором цикл сбился
                 indexJinChain.erase(indexJinChain.end() - 1);
-                indexIinChain.erase(indexIinChain.end() - 1);//?
+                indexIinChain.erase(indexIinChain.end() - 1);
                 currentIndexJ = indexJinChain.back();
             }
             flag = 0;
-            //по Горизонтали в выбрангой строке ищем нужный столбец
+            //по горизонтали в выбрангой строке ищем нужный столбец
             for (j; j < countConsumers; j++) {
                 if (costMat[currentIndexI][j].get_status() == basic && j != currentIndexJ && (!containIndexes(currentIndexI, j, indexIinChain.size(), indexIinChain, indexJinChain) || (currentIndexI == cellIndexI && j == cellIndexJ))) {//
-                    //if (costMat[currentIndexI][currentIndexJ].get_signInHalfChain() == negative)
-                    //    costMat[currentIndexI][j].set_signInHalfChain(positive);//ранее просто это было
-                    //else
-                    //    costMat[currentIndexI][j].set_signInHalfChain(negative);
                     indexIinChain.push_back(currentIndexI);//запоминаем индексы клетки 
                     indexJinChain.push_back(j);//запоминаем номер столбца
                     currentIndexJ = j;
@@ -755,15 +743,15 @@ void Method_potentials::addNullTransportation() {
                     break;
                 }
             }
-            if (flag == 0)       //если в строке не нашли клетку для продолжения цикла, 
-            {     // то в поисках другой строки, а текущий удалим
-                if (indexIinChain.size() == 1 || indexJinChain.size() == 1) {//indexIinChain.empty()   чтобы из пустого вектора не удаляли
+            if (flag == 0)       
+            {     
+                if (indexIinChain.size() == 1 || indexJinChain.size() == 1) {
                     countCycles = countSuppliers * countConsumers;
                     break;
                 }
-                i = indexIinChain.back() + 1;//пропусти элемент на котором цикл сбился
+                i = indexIinChain.back() + 1;
                 indexIinChain.erase(indexIinChain.end() - 1);
-                indexJinChain.erase(indexJinChain.end() - 1);//?
+                indexJinChain.erase(indexJinChain.end() - 1);
                 currentIndexI = indexIinChain.back();
 
             }

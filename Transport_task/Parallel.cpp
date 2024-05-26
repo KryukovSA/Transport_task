@@ -464,7 +464,11 @@ void Method_potentials::redistributionSupplies_parallel() {
             std::cout << "cost not change because break" << endl; //вероятно не понадобится так как я не допускаю нулевое перераспределение
             break;
         }
+        auto start_time = std::chrono::high_resolution_clock::now();
         calculatePotencials_parallel();
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
+        clean_time += duration.count();
     }
 
 }

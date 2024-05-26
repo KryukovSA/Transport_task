@@ -21,6 +21,7 @@ class Method_potentials {
     //vector<vector<Cell>>costMat(countSuppliers, vector<Cell>(countConsumers));
     vector<vector<Cell>>costMat;
 public:
+    double clean_time = 0;
     Method_potentials() {
         set_countSuppliers(150);
         set_countConsumers(100);

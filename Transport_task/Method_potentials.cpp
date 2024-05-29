@@ -2,6 +2,7 @@
 #include <fstream>
 #include<numeric>
 #include <chrono>
+#include <unordered_set>
 
 using namespace libxl;
 
@@ -21,7 +22,8 @@ void Method_potentials::solve() {
     }
     calculatePotencials();
     auto start_time = std::chrono::high_resolution_clock::now();
-    redistributionSupplies();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
+    //redistributionSupplies();
+    redistributionSuppliesNewShema();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     cout << "стоимость перевозок без использования электрогрузовиков" << endl;
@@ -30,8 +32,223 @@ void Method_potentials::solve() {
     //showPostavki();
     cout << endl;
 }
+    bool isForbidden(int i, int j, const unordered_set<int>&forbiddenCells, int countConsumers) {
+        return forbiddenCells.find(i * countConsumers + j) != forbiddenCells.end();
+    };
+    enum Direction {
+        RIGHT, DOWN, LEFT, UP
+    };
+    bool containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain) {
+        for (size_t k = 0; k < indexIinChain.size(); ++k) {
+            if (indexIinChain[k] == i && indexJinChain[k] == j) {
+                return true;
+            }
+        }
+        return false;
+    }
+void Method_potentials::redistributionSuppliesNewShema() {
 
 
+
+    //calculatePotencials(costMat, suppliersPotincials, сonsumerPotincials);
+    int old_cost = 0;
+    int new_cost = 1;
+    int colision = 0;
+
+    while (checkOptimal() != true) {//
+
+        if (checkDegeneratePlan()) {//вырожденность убирает, тут необходимо? 
+            addNullTransportation();
+        }
+
+        vector<vector<Cell>> tmpCostMat = costMat;
+
+        old_cost = calculatingСosts();
+        Cell min = tmpCostMat[0][0];
+        int minIndexI = 0;
+        int minIndexJ = 0;
+
+        //находим клетку с наим разностью c-u-v для начала цикла пересчета
+        for (int i = 0; i < suppliersPotincials.size(); i++) {
+            for (int j = 0; j < сonsumerPotincials.size(); j++) {
+                if (tmpCostMat[i][j].get_status() == free_)
+                    if (tmpCostMat[i][j].get_defferncTarifAndPotincials() < min.get_defferncTarifAndPotincials()) {
+                        min = tmpCostMat[i][j];
+                        minIndexI = i;
+                        minIndexJ = j;
+                    }
+            }
+        }
+        //build halfchain
+        //цикл как то строим +- выделяем, все клетки с минимальной поставкой станут нулевыми
+        tmpCostMat[minIndexI][minIndexJ].set_signInHalfChain(positive);
+        tmpCostMat[minIndexI][minIndexJ].set_status(basic);
+
+        vector<int> indexIinChain; // номер строки для ячейки цикла
+        vector<int> indexJinChain; // номер столбца
+        unordered_set<int> forbiddenCells; // набор запрещенных ячеек
+        indexIinChain.push_back(minIndexI);//запоминаем индексы начала цикла
+        indexJinChain.push_back(minIndexJ);
+        int currentIndexI = minIndexI;//то где мы на текущем шаге
+        int currentIndexJ = minIndexJ;
+        int countCycles = 0;
+        int i = 0;
+        int j = 0;
+        int counter = 0;
+        int signal = 1;
+        Direction direction = RIGHT;
+        Direction prev_direction;
+        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4)) && countCycles < 100*suppliersPotincials.size() * сonsumerPotincials.size()) {// && counter < stocks.size()
+            if (currentIndexI == minIndexI && currentIndexJ == minIndexJ && indexIinChain.size() <= 4) {//количество попаданий в начальную точку.
+                counter++;
+            }
+            countCycles++;
+            int flag = 0;
+            if (indexIinChain.front() == indexIinChain.back() && indexJinChain.front() != indexJinChain.back() && indexIinChain.size() >= 4)
+                break;
+            if (indexJinChain.front() == indexJinChain.back() && indexIinChain.front() != indexIinChain.back() && indexIinChain.size() >= 4)
+                break;
+            // Определяем следующую ячейку в зависимости от направления
+            switch (direction) {
+            case RIGHT:
+                for (int j = currentIndexJ + 1; j < countConsumers; ++j) {
+                    if (costMat[currentIndexI][j].get_status() == basic && !containIndexes1(currentIndexI, j, indexIinChain, indexJinChain) && !isForbidden(currentIndexI, j, forbiddenCells, countConsumers)) {
+                        currentIndexJ = j;
+                        flag = 1;
+                        prev_direction = direction;
+                        direction = DOWN;
+                        break;
+                    }
+                }
+                break;
+            case DOWN:
+                for (int i = currentIndexI + 1; i < countSuppliers; ++i) {
+                    if (costMat[i][currentIndexJ].get_status() == basic && !containIndexes1(i, currentIndexJ, indexIinChain, indexJinChain) && !isForbidden(i, currentIndexJ, forbiddenCells, countConsumers)) {
+                        currentIndexI = i;
+                        flag = 1;
+                        prev_direction = direction;
+                        direction = LEFT;
+                        break;
+                    }
+                }
+                break;
+            case LEFT:
+                for (int j = currentIndexJ - 1; j >= 0; --j) {
+                    if (costMat[currentIndexI][j].get_status() == basic && !containIndexes1(currentIndexI, j, indexIinChain, indexJinChain) && !isForbidden(currentIndexI, j, forbiddenCells, countConsumers)) {
+                        currentIndexJ = j;
+                        flag = 1;
+                        prev_direction = direction;
+                        direction = UP;
+                        break;
+                    }
+                }
+                break;
+            case UP:
+                for (int i = currentIndexI - 1; i >= 0; --i) {
+                    if (costMat[i][currentIndexJ].get_status() == basic && !containIndexes1(i, currentIndexJ, indexIinChain, indexJinChain) && !isForbidden(i, currentIndexJ, forbiddenCells, countConsumers)) {
+                        currentIndexI = i;
+                        flag = 1;
+                        prev_direction = direction;
+                        direction = RIGHT;
+                        break;
+                    }
+                }
+                break;
+            }
+
+            if (flag ) { 
+                signal == 1;
+                if (tmpCostMat[indexIinChain.back()][indexJinChain.back()].get_signInHalfChain() == positive)
+                    tmpCostMat[currentIndexI][currentIndexJ].set_signInHalfChain(negative);//ранее просто это было
+                else
+                    tmpCostMat[currentIndexI][currentIndexJ].set_signInHalfChain(positive);
+                indexIinChain.push_back(currentIndexI);
+                indexJinChain.push_back(currentIndexJ);
+               
+            }
+            else { // если не нашли подходящую ячейку, откатываемся
+                if (signal == 2) {
+                    signal == 0;
+                     forbiddenCells.insert(currentIndexI * countConsumers + currentIndexJ); // добавляем в запрещенные
+                    if (indexIinChain.size() == 1 && indexJinChain.size() == 1 && counter >= 5) {
+                        countCycles = countSuppliers * countConsumers;
+                        break;
+                    }
+                    indexIinChain.pop_back();
+                    indexJinChain.pop_back();
+                }
+                if (!indexIinChain.empty() && !indexJinChain.empty()) {
+                    currentIndexI = indexIinChain.back();
+                    currentIndexJ = indexJinChain.back();
+                }
+                direction = static_cast<Direction>((direction + 2) % 4); // меняем направление на противоположное
+                signal++;
+            }
+        }
+        if (countCycles >= suppliersPotincials.size() * сonsumerPotincials.size()) {//|| counter >= 5
+            cout << "Cycle not found" << "\n";
+            break;
+        }
+        int minI = indexIinChain[1];
+        int minJ = indexJinChain[1];
+
+        //ищем минимум поставок в помеченных negative клетках
+        double minCargoVolume = tmpCostMat[indexIinChain[1]][indexJinChain[1]].get_cargoVolueme();
+        for (int k = 0; k < indexIinChain.size(); k++) {
+            if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative && tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() < minCargoVolume) {//можно улучшить чтоб шел по нечетным и все
+                minCargoVolume = tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme();
+                minI = indexIinChain[k];
+                minJ = indexJinChain[k];
+            }
+
+        }
+
+        //перераспределяем поставки в результирующую матрицу
+        if (minCargoVolume != 0) {
+            for (int k = 0; k < indexIinChain.size() - 1; k++) {// -1 тк клетка начала цикла дважды повторяется
+                if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative) {//можно улучшить чтоб шел по нечетным и все
+                    costMat[indexIinChain[k]][indexJinChain[k]].set_cargoVolueme(costMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() - minCargoVolume);
+                }
+                else
+                {
+                    costMat[indexIinChain[k]][indexJinChain[k]].set_cargoVolueme(costMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() + minCargoVolume);
+                }
+            }
+        }
+        else {
+            //showPostavki();
+        //    std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        //    std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
+            break;
+        }
+
+
+        //showPostavki();//----------------------------------------------
+
+        //меняем статусы обнуленных клеток
+        updateStatuses(indexIinChain, indexJinChain);
+
+        //std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        new_cost = calculatingСosts();
+        if (new_cost == old_cost) {
+            colision++;
+        }
+        if (colision > 3) { //3 это наугад
+            std::cout << "cost not change because break" << endl; //вероятно не понадобится так как я не допускаю нулевое перераспределение
+            break;
+        }
+
+        /*  for (int i = 0; i < suppliersPotincials.size(); i++) {
+              cout << suppliersPotincials[i] << " ";
+          }
+          cout << endl;
+
+          for (int i = 0; i < сonsumerPotincials.size(); i++)
+              cout << сonsumerPotincials[i] << " ";
+          cout << endl;*/
+        calculatePotencials();
+    }
+}
 
 
 

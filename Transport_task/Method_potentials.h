@@ -46,7 +46,7 @@ public:
 
 
     vector<vector<Cell>> generate_transport_task();
-
+    void redistributionSuppliesNewShema();
 
     double findMax();
     bool checkDegeneratePlan();

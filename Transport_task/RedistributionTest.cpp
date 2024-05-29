@@ -17,8 +17,9 @@ int main() {
     srand(static_cast<unsigned int>(time(0)));
     Method_potentials method_potencials;
     int electric_count = 5;//количество не более половины числа потербителей например
-    int flag = 1;// 1 - из табл тарифы     0 - автогенерация
-
+    int flag = 0;// 1 - из табл тарифы     0 - автогенерация
+    method_potencials.set_countSuppliers(200);
+    method_potencials.set_countConsumers(200);
 
 
     vector<vector<int>> result_volumes(method_potencials.get_countSuppliers(), std::vector<int>(method_potencials.get_countConsumers()));
@@ -27,7 +28,15 @@ int main() {
         main_matrix = method_potencials.generate_transport_task();
 
 
-    method_potencials.method_potentials_init(flag, 0, main_matrix);
+    method_potencials.method_potentials_init(flag, 8, main_matrix);
+    method_potencials.solve1();
+    for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
+        for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
+            result_volumes[i][j] = method_potencials.get_value(i, j);
+        }
+    }
+
+    method_potencials.method_potentials_init(flag, 8, main_matrix);
     method_potencials.solve();
     for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
         for (int j = 0; j < method_potencials.get_countConsumers(); j++) {

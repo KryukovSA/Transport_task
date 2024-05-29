@@ -22,6 +22,32 @@ void Method_potentials::solve() {
     }
     calculatePotencials();
     auto start_time = std::chrono::high_resolution_clock::now();
+    redistributionSupplies();
+    //redistributionSuppliesNewShema();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
+    cout << "стоимость перевозок без использования электрогрузовиков" << endl;
+    cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
+    //std::cout << "execution time: " << duration.count() << " second." << std::endl;
+    //showPostavki();
+    cout << endl;
+}
+void Method_potentials::solve1() {
+
+    //showTable();
+    if (!checkCloseTypeTask()) {//если не закрытая
+        addDataForClosingTask();
+        closeTypeTask = false;
+    }
+    methodMinElem();
+    //showPostavki();//первый опорный план
+
+    //cout << "result cost after minimal elem method: " << static_cast<long long>(calculatingСosts()) << endl;
+    while (checkDegeneratePlan()) {//вырожденность убирает
+        addNullTransportation();
+    }
+    calculatePotencials();
+    auto start_time = std::chrono::high_resolution_clock::now();
     //redistributionSupplies();
     redistributionSuppliesNewShema();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
     auto end_time = std::chrono::high_resolution_clock::now();
@@ -32,20 +58,24 @@ void Method_potentials::solve() {
     //showPostavki();
     cout << endl;
 }
-    bool isForbidden(int i, int j, const unordered_set<int>&forbiddenCells, int countConsumers) {
-        return forbiddenCells.find(i * countConsumers + j) != forbiddenCells.end();
-    };
-    enum Direction {
-        RIGHT, DOWN, LEFT, UP
-    };
-    bool containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain) {
-        for (size_t k = 0; k < indexIinChain.size(); ++k) {
-            if (indexIinChain[k] == i && indexJinChain[k] == j) {
-                return true;
-            }
+
+
+
+
+bool isForbidden(int i, int j, const unordered_set<int>&forbiddenCells, int countConsumers) {
+    return forbiddenCells.find(i * countConsumers + j) != forbiddenCells.end();
+};
+enum Direction {
+    RIGHT, DOWN, LEFT, UP
+};
+bool containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain) {
+    for (size_t k = 0; k < indexIinChain.size(); ++k) {
+        if (indexIinChain[k] == i && indexJinChain[k] == j) {
+            return true;
         }
-        return false;
     }
+    return false;
+}
 void Method_potentials::redistributionSuppliesNewShema() {
 
 
@@ -91,18 +121,16 @@ void Method_potentials::redistributionSuppliesNewShema() {
         indexJinChain.push_back(minIndexJ);
         int currentIndexI = minIndexI;//то где мы на текущем шаге
         int currentIndexJ = minIndexJ;
-        int countCycles = 0;
         int i = 0;
         int j = 0;
         int counter = 0;
         int signal = 1;
         Direction direction = RIGHT;
-        Direction prev_direction;
-        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4)) && countCycles < 100*suppliersPotincials.size() * сonsumerPotincials.size()) {// && counter < stocks.size()
+        //Начало построения цикла пересчета
+        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4))) {// && counter < stocks.size()
             if (currentIndexI == minIndexI && currentIndexJ == minIndexJ && indexIinChain.size() <= 4) {//количество попаданий в начальную точку.
                 counter++;
             }
-            countCycles++;
             int flag = 0;
             if (indexIinChain.front() == indexIinChain.back() && indexJinChain.front() != indexJinChain.back() && indexIinChain.size() >= 4)
                 break;
@@ -115,7 +143,6 @@ void Method_potentials::redistributionSuppliesNewShema() {
                     if (costMat[currentIndexI][j].get_status() == basic && !containIndexes1(currentIndexI, j, indexIinChain, indexJinChain) && !isForbidden(currentIndexI, j, forbiddenCells, countConsumers)) {
                         currentIndexJ = j;
                         flag = 1;
-                        prev_direction = direction;
                         direction = DOWN;
                         break;
                     }
@@ -126,7 +153,6 @@ void Method_potentials::redistributionSuppliesNewShema() {
                     if (costMat[i][currentIndexJ].get_status() == basic && !containIndexes1(i, currentIndexJ, indexIinChain, indexJinChain) && !isForbidden(i, currentIndexJ, forbiddenCells, countConsumers)) {
                         currentIndexI = i;
                         flag = 1;
-                        prev_direction = direction;
                         direction = LEFT;
                         break;
                     }
@@ -137,7 +163,6 @@ void Method_potentials::redistributionSuppliesNewShema() {
                     if (costMat[currentIndexI][j].get_status() == basic && !containIndexes1(currentIndexI, j, indexIinChain, indexJinChain) && !isForbidden(currentIndexI, j, forbiddenCells, countConsumers)) {
                         currentIndexJ = j;
                         flag = 1;
-                        prev_direction = direction;
                         direction = UP;
                         break;
                     }
@@ -148,7 +173,6 @@ void Method_potentials::redistributionSuppliesNewShema() {
                     if (costMat[i][currentIndexJ].get_status() == basic && !containIndexes1(i, currentIndexJ, indexIinChain, indexJinChain) && !isForbidden(i, currentIndexJ, forbiddenCells, countConsumers)) {
                         currentIndexI = i;
                         flag = 1;
-                        prev_direction = direction;
                         direction = RIGHT;
                         break;
                     }
@@ -157,25 +181,25 @@ void Method_potentials::redistributionSuppliesNewShema() {
             }
 
             if (flag ) { 
-                signal == 1;
+                signal = 1;
                 if (tmpCostMat[indexIinChain.back()][indexJinChain.back()].get_signInHalfChain() == positive)
-                    tmpCostMat[currentIndexI][currentIndexJ].set_signInHalfChain(negative);//ранее просто это было
+                    tmpCostMat[currentIndexI][currentIndexJ].set_signInHalfChain(negative);
                 else
                     tmpCostMat[currentIndexI][currentIndexJ].set_signInHalfChain(positive);
                 indexIinChain.push_back(currentIndexI);
                 indexJinChain.push_back(currentIndexJ);
                
             }
-            else { // если не нашли подходящую ячейку, откатываемся
-                if (signal == 2) {
-                    signal == 0;
+            else {
+                if (signal == 2) {//меняли направление и все равно не нашли нужную ячейку
+                    signal = 0;
                      forbiddenCells.insert(currentIndexI * countConsumers + currentIndexJ); // добавляем в запрещенные
                     if (indexIinChain.size() == 1 && indexJinChain.size() == 1 && counter >= 5) {
-                        countCycles = countSuppliers * countConsumers;
                         break;
                     }
                     indexIinChain.pop_back();
                     indexJinChain.pop_back();
+                    direction = static_cast<Direction>(direction + 1);
                 }
                 if (!indexIinChain.empty() && !indexJinChain.empty()) {
                     currentIndexI = indexIinChain.back();
@@ -185,10 +209,10 @@ void Method_potentials::redistributionSuppliesNewShema() {
                 signal++;
             }
         }
-        if (countCycles >= suppliersPotincials.size() * сonsumerPotincials.size()) {//|| counter >= 5
-            cout << "Cycle not found" << "\n";
-            break;
-        }
+        //if (countCycles >=1000* suppliersPotincials.size() * сonsumerPotincials.size()) {//|| counter >= 5
+        //    cout << "Cycle not found" << "\n";
+        //    break;
+        //}
         int minI = indexIinChain[1];
         int minJ = indexJinChain[1];
 
@@ -205,7 +229,7 @@ void Method_potentials::redistributionSuppliesNewShema() {
 
         //перераспределяем поставки в результирующую матрицу
         if (minCargoVolume != 0) {
-            for (int k = 0; k < indexIinChain.size() - 1; k++) {// -1 тк клетка начала цикла дважды повторяется
+            for (int k = 0; k < indexIinChain.size(); k++) {// -1 тк клетка начала цикла дважды повторяется
                 if (tmpCostMat[indexIinChain[k]][indexJinChain[k]].get_signInHalfChain() == negative) {//можно улучшить чтоб шел по нечетным и все
                     costMat[indexIinChain[k]][indexJinChain[k]].set_cargoVolueme(costMat[indexIinChain[k]][indexJinChain[k]].get_cargoVolueme() - minCargoVolume);
                 }
@@ -217,23 +241,23 @@ void Method_potentials::redistributionSuppliesNewShema() {
         }
         else {
             //showPostavki();
-        //    std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
-        //    std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
+            std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+           std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
             break;
         }
 
 
-        //showPostavki();//----------------------------------------------
+       //showPostavki();//----------------------------------------------
 
         //меняем статусы обнуленных клеток
-        updateStatuses(indexIinChain, indexJinChain);
+        updateStatuses1(indexIinChain, indexJinChain);
 
-        //std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
         new_cost = calculatingСosts();
         if (new_cost == old_cost) {
             colision++;
         }
-        if (colision > 3) { //3 это наугад
+        if (colision > 3) {
             std::cout << "cost not change because break" << endl; //вероятно не понадобится так как я не допускаю нулевое перераспределение
             break;
         }
@@ -246,7 +270,7 @@ void Method_potentials::redistributionSuppliesNewShema() {
           for (int i = 0; i < сonsumerPotincials.size(); i++)
               cout << сonsumerPotincials[i] << " ";
           cout << endl;*/
-        calculatePotencials();
+        calculatePotencials_parallel();
     }
 }
 
@@ -687,6 +711,28 @@ void Method_potentials::updateStatuses(vector<int>& indexIinChain, vector<int>& 
     }
 }
 
+void Method_potentials::updateStatuses1(vector<int>& indexIinChain, vector<int>& indexJinChain) {
+    for (int i = 0; i < indexIinChain.size(); i++) {
+        if (costMat[indexIinChain[i]][indexJinChain[i]].get_cargoVolueme() > 0) {
+            costMat[indexIinChain[i]][indexJinChain[i]].set_status(basic);
+            costMat[indexIinChain[i]][indexJinChain[i]].set_signInHalfChain(neutral);
+        }
+    }
+    for (int i = 0; i < indexIinChain.size(); i++) {
+        if (costMat[indexIinChain[i]][indexJinChain[i]].get_cargoVolueme() == 0) {
+            costMat[indexIinChain[i]][indexJinChain[i]].set_signInHalfChain(neutral);
+        }
+    }
+
+    for (int i = 0; i < indexIinChain.size(); i++) {
+        if (costMat[indexIinChain[i]][indexJinChain[i]].get_cargoVolueme() == 0) {
+            costMat[indexIinChain[i]][indexJinChain[i]].set_status(free_);//в ходе пересчета освободиться должна только одна клетка????
+            break;
+        }
+    }
+}
+
+
 
 
 
@@ -841,7 +887,7 @@ void Method_potentials::redistributionSupplies() {
         //меняем статусы обнуленных клеток
         updateStatuses(indexIinChain, indexJinChain);
  
-        //std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
         new_cost = calculatingСosts();
         if (new_cost == old_cost) {
             colision++;
@@ -859,7 +905,7 @@ void Method_potentials::redistributionSupplies() {
         for (int i = 0; i < сonsumerPotincials.size(); i++)
             cout << сonsumerPotincials[i] << " ";
         cout << endl;*/
-        calculatePotencials();
+        calculatePotencials_parallel();
     }
 }
 

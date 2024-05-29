@@ -44,9 +44,10 @@ public:
     void showPostavki();
     void save_example();
 
-
+    void updateStatuses1(vector<int>& indexIinChain, vector<int>& indexJinChain);
     vector<vector<Cell>> generate_transport_task();
     void redistributionSuppliesNewShema();
+    void solve1();
 
     double findMax();
     bool checkDegeneratePlan();

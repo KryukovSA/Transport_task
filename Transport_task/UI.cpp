@@ -30,12 +30,33 @@
 //        method_potencials.set_countConsumers(b);
 //    }
 //
-//    cout << "какое количество электрогрузовиков планируется задействовать?" << endl;
-//    cin >> electric_count;
+//    // Проверка на ввод неотрицательного числа электрогрузовиков
+//    while (true) {
+//        cout << "какое количество электрогрузовиков планируется задействовать?" << endl;
+//        cin >> electric_count;
+//        if (cin.fail() || electric_count < 0) {
+//            cin.clear(); // Сброс состояния потока
+//            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка буфера ввода
+//            cout << "Пожалуйста, введите неотрицательное целое число." << endl;
+//        }
+//        else {
+//            break; // Корректное значение введено, выход из цикла
+//        }
+//    }
 //
 //    float econom_parametr = 0.6;
-//    cout << "С каким параметром экономической выгоды вы хотите увидеть оптимальный план ? 1 если без него" << endl;
-//    cin >> econom_parametr;
+//    while (true) {
+//        cout << "С каким параметром экономической выгоды вы хотите увидеть оптимальный план? (1 если без него)" << endl;
+//        cin >> econom_parametr;
+//        if (cin.fail() || econom_parametr < 0.4 || econom_parametr > 1.0) {
+//            cin.clear(); // Сброс состояния потока
+//            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка буфера ввода
+//            cout << "Пожалуйста, введите число в диапазоне от 0.4 до 1.0." << endl;
+//        }
+//        else {
+//            break; // Корректное значение введено, выход из цикла
+//        }
+//    }
 //
 //    vector<vector<int>> result_volumes(method_potencials.get_countSuppliers(), std::vector<int>(method_potencials.get_countConsumers()));
 //    vector<vector<Cell>> main_matrix;
@@ -44,7 +65,7 @@
 //
 //
 //   method_potencials.method_potentials_init(flag, 8, main_matrix); 
-//   method_potencials.solve();
+//   method_potencials.solve1();
 //   if (econom_parametr - 0.001 < 1 && econom_parametr + 0.001 > 1) {//так как функции округления не работают
 //       for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //           for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
@@ -55,7 +76,7 @@
 //    //method_potencials.method_potentials_init(flag, 7, main_matrix);
 //    //method_potencials.solve_electric_sequence(electric_count);
 //   
-//    method_potencials.method_potentials_init(flag, 7, main_matrix);
+//    method_potencials.method_potentials_init(flag, 8, main_matrix);
 //    method_potencials.solve_parallel(electric_count, 0.9);
 //    if (econom_parametr-0.001 < 0.9  && econom_parametr + 0.001 > 0.9) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
@@ -65,7 +86,7 @@
 //        }
 //    }
 //
-//    method_potencials.method_potentials_init(flag, 7, main_matrix);
+//    method_potencials.method_potentials_init(flag, 8, main_matrix);
 //    method_potencials.solve_parallel(electric_count, 0.8);
 //    if (econom_parametr - 0.001 < 0.8 && econom_parametr + 0.001 > 0.8) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
@@ -75,7 +96,7 @@
 //        }
 //    }
 //
-//    method_potencials.method_potentials_init(flag, 7, main_matrix);
+//    method_potencials.method_potentials_init(flag, 8, main_matrix);
 //    method_potencials.solve_parallel(electric_count, 0.7);
 //    if (econom_parametr - 0.001 < 0.7 && econom_parametr + 0.001 > 0.7) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
@@ -85,7 +106,7 @@
 //        }
 //    }
 //
-//    method_potencials.method_potentials_init(flag, 7, main_matrix);
+//    method_potencials.method_potentials_init(flag, 8, main_matrix);
 //    method_potencials.solve_parallel(electric_count, 0.6);
 //    if (econom_parametr - 0.001 < 0.6 && econom_parametr + 0.001 > 0.6) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
@@ -95,7 +116,7 @@
 //        }
 //    }
 //
-//    method_potencials.method_potentials_init(flag, 7, main_matrix);
+//    method_potencials.method_potentials_init(flag, 8, main_matrix);
 //    method_potencials.solve_parallel(electric_count, 0.5);
 //    if (econom_parametr - 0.001 < 0.5 && econom_parametr + 0.001 > 0.5) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
@@ -106,7 +127,7 @@
 //    }
 //
 //
-//    method_potencials.method_potentials_init(flag, 7, main_matrix);
+//    method_potencials.method_potentials_init(flag, 8, main_matrix);
 //    method_potencials.solve_parallel(electric_count, 0.4);
 //    if (econom_parametr - 0.001 < 0.4 && econom_parametr + 0.001 > 0.4) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {

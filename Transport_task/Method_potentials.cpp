@@ -2,7 +2,6 @@
 #include <fstream>
 #include<numeric>
 #include <chrono>
-#include <unordered_set>
 
 using namespace libxl;
 
@@ -33,14 +32,21 @@ void Method_potentials::solve() {
     cout << endl;
 }
 void Method_potentials::solve1() {
-
+    static int num = 0;
     //showTable();
     if (!checkCloseTypeTask()) {//если не закрытая
         addDataForClosingTask();
         closeTypeTask = false;
     }
     methodMinElem();
-    //showPostavki();//первый опорный план
+    
+
+    if (num == 0)
+        printLine();
+        cout << "Опорный план:";
+        showPostavki();//первый опорный план
+
+    num++;
 
     //cout << "result cost after minimal elem method: " << static_cast<long long>(calculatingСosts()) << endl;
     while (checkDegeneratePlan()) {//вырожденность убирает
@@ -52,10 +58,14 @@ void Method_potentials::solve1() {
     redistributionSuppliesNewShema();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-    cout << "стоимость перевозок без использования электрогрузовиков" << endl;
+
+    printLine();
+    cout << "Оптимальный план:";
+    showPostavki(); 
+    cout << "\nстоимость перевозок без использования электрогрузовиков" << endl;
     cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
     //std::cout << "execution time: " << duration.count() << " second." << std::endl;
-    //showPostavki();
+    
     cout << endl;
 }
 
@@ -65,10 +75,8 @@ void Method_potentials::solve1() {
 bool isForbidden(int i, int j, const unordered_set<int>&forbiddenCells, int countConsumers) {
     return forbiddenCells.find(i * countConsumers + j) != forbiddenCells.end();
 };
-enum Direction {
-    RIGHT, DOWN, LEFT, UP
-};
-bool containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain) {
+
+bool Method_potentials::containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain) {
     for (size_t k = 0; k < indexIinChain.size(); ++k) {
         if (indexIinChain[k] == i && indexJinChain[k] == j) {
             return true;
@@ -127,19 +135,16 @@ void Method_potentials::redistributionSuppliesNewShema() {
         int signal = 1;
         Direction direction = RIGHT;
         //Начало построения цикла пересчета
-        while ((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4))) {// && counter < stocks.size()
+        while (true){                                //((((currentIndexI != minIndexI || currentIndexJ != minIndexJ) || indexIinChain.size() <= 4))) {// && counter < stocks.size()
             if (currentIndexI == minIndexI && currentIndexJ == minIndexJ && indexIinChain.size() <= 4) {//количество попаданий в начальную точку.
                 counter++;
             }
             int flag = 0;
-            if (indexIinChain.front() == indexIinChain.back() && indexJinChain.front() != indexJinChain.back() && indexIinChain.size() >= 4)
-                break;
-            if (indexJinChain.front() == indexJinChain.back() && indexIinChain.front() != indexIinChain.back() && indexIinChain.size() >= 4)
-                break;
+
             // Определяем следующую ячейку в зависимости от направления
             switch (direction) {
             case RIGHT:
-                for (int j = currentIndexJ + 1; j < countConsumers; ++j) {
+                for (int j = currentIndexJ + 1; j < countConsumers && flag == 0; ++j) {
                     if (costMat[currentIndexI][j].get_status() == basic && !containIndexes1(currentIndexI, j, indexIinChain, indexJinChain) && !isForbidden(currentIndexI, j, forbiddenCells, countConsumers)) {
                         currentIndexJ = j;
                         flag = 1;
@@ -149,7 +154,7 @@ void Method_potentials::redistributionSuppliesNewShema() {
                 }
                 break;
             case DOWN:
-                for (int i = currentIndexI + 1; i < countSuppliers; ++i) {
+                for (int i = currentIndexI + 1; i < countSuppliers && flag == 0; ++i) {
                     if (costMat[i][currentIndexJ].get_status() == basic && !containIndexes1(i, currentIndexJ, indexIinChain, indexJinChain) && !isForbidden(i, currentIndexJ, forbiddenCells, countConsumers)) {
                         currentIndexI = i;
                         flag = 1;
@@ -159,7 +164,7 @@ void Method_potentials::redistributionSuppliesNewShema() {
                 }
                 break;
             case LEFT:
-                for (int j = currentIndexJ - 1; j >= 0; --j) {
+                for (int j = currentIndexJ - 1; j >= 0 && flag == 0; --j) {
                     if (costMat[currentIndexI][j].get_status() == basic && !containIndexes1(currentIndexI, j, indexIinChain, indexJinChain) && !isForbidden(currentIndexI, j, forbiddenCells, countConsumers)) {
                         currentIndexJ = j;
                         flag = 1;
@@ -169,7 +174,7 @@ void Method_potentials::redistributionSuppliesNewShema() {
                 }
                 break;
             case UP:
-                for (int i = currentIndexI - 1; i >= 0; --i) {
+                for (int i = currentIndexI - 1; i >= 0 && flag == 0; --i) {
                     if (costMat[i][currentIndexJ].get_status() == basic && !containIndexes1(i, currentIndexJ, indexIinChain, indexJinChain) && !isForbidden(i, currentIndexJ, forbiddenCells, countConsumers)) {
                         currentIndexI = i;
                         flag = 1;
@@ -180,7 +185,7 @@ void Method_potentials::redistributionSuppliesNewShema() {
                 break;
             }
 
-            if (flag ) { 
+            if (flag) { 
                 signal = 1;
                 if (tmpCostMat[indexIinChain.back()][indexJinChain.back()].get_signInHalfChain() == positive)
                     tmpCostMat[currentIndexI][currentIndexJ].set_signInHalfChain(negative);
@@ -188,7 +193,11 @@ void Method_potentials::redistributionSuppliesNewShema() {
                     tmpCostMat[currentIndexI][currentIndexJ].set_signInHalfChain(positive);
                 indexIinChain.push_back(currentIndexI);
                 indexJinChain.push_back(currentIndexJ);
-               
+
+                if (indexIinChain.front() == indexIinChain.back() && indexJinChain.front() != indexJinChain.back() && indexIinChain.size() >= 4 && indexIinChain.size()%2==0)
+                    break;
+                if (indexJinChain.front() == indexJinChain.back() && indexIinChain.front() != indexIinChain.back() && indexIinChain.size() >= 4 && indexIinChain.size() % 2 == 0)
+                    break;
             }
             else {
                 if (signal == 2) {//меняли направление и все равно не нашли нужную ячейку
@@ -199,13 +208,15 @@ void Method_potentials::redistributionSuppliesNewShema() {
                     }
                     indexIinChain.pop_back();
                     indexJinChain.pop_back();
-                    direction = static_cast<Direction>(direction + 1);
+                    direction = static_cast<Direction>((direction + 1) % 4);//после удаления меняется горизонтальный поиск на вертикальный и наоборот
+                }
+                else {
+                    direction = static_cast<Direction>((direction + 2) % 4); // меняем направление на противоположное
                 }
                 if (!indexIinChain.empty() && !indexJinChain.empty()) {
                     currentIndexI = indexIinChain.back();
                     currentIndexJ = indexJinChain.back();
                 }
-                direction = static_cast<Direction>((direction + 2) % 4); // меняем направление на противоположное
                 signal++;
             }
         }
@@ -239,12 +250,12 @@ void Method_potentials::redistributionSuppliesNewShema() {
                 }
             }
         }
-        else {
-            //showPostavki();
-            std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
-           std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
-            break;
-        }
+        //else {
+        //    //showPostavki();
+        //    std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        //   std::cout << "redistribution volume = 0" << endl;//либо в цикл добавляли нулевую перевозку, либо при перераспределении две занулились, но мы как и следует лишь одну убрали из базовых
+        //    break;
+        //}
 
 
        //showPostavki();//----------------------------------------------
@@ -252,13 +263,13 @@ void Method_potentials::redistributionSuppliesNewShema() {
         //меняем статусы обнуленных клеток
         updateStatuses1(indexIinChain, indexJinChain);
 
-        std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
+        //std::cout << "calculating cost: " << static_cast<long long>(calculatingСosts()) << endl;
         new_cost = calculatingСosts();
         if (new_cost == old_cost) {
             colision++;
         }
         if (colision > 3) {
-            std::cout << "cost not change because break" << endl; //вероятно не понадобится так как я не допускаю нулевое перераспределение
+        //    std::cout << "cost not change because break" << endl; //вероятно не понадобится так как я не допускаю нулевое перераспределение
             break;
         }
 
@@ -495,15 +506,29 @@ double Method_potentials::getRandomNumber(int min, int max)
     return static_cast<double>(rand() * fraction * (max - min + 1) + min);
 }
 
-void Method_potentials::showTable() {
+void Method_potentials::showTarifs() {
     cout << "\n";
-    cout << "tarifs" << endl;
+    cout << "Запасы" << endl;
     for (int i = 0; i < countSuppliers; i++) {
+        cout << stocks[i] << " |\t";
         for (int j = 0; j < countConsumers; j++) {
             std::cout << costMat[i][j].get_tarif() << "\t";
         }
         cout << endl;
     }
+    cout << endl;
+    cout << endl;
+    cout << "\t";
+    for (int j = 0; j < countConsumers; j++) {
+        if (j == countConsumers - 1)
+            cout << needs[j] << "  " << "Потребности";
+        else
+            cout << needs[j] << "\t";
+
+    }
+   /* cout << "Потребности";
+    cout << endl;
+    cout << endl;*/
     cout << endl;
 }
 
@@ -568,12 +593,45 @@ void Method_potentials::methodMinElem() {
 void Method_potentials::showPostavki() {
     cout << endl;
     if (countConsumers < 30) {
-        for (int i = 0; i < countSuppliers; i++)
-        {
-            for (int j = 0; j < countConsumers; j++)
+
+        
+        cout << "\n";
+        cout << "Запасы" << endl;
+        for (int i = 0; i < countSuppliers; i++) {
+            cout << stocks[i] << " |\t";
+            for (int j = 0; j < countConsumers; j++) {
                 std::cout << costMat[i][j].get_cargoVolueme() << "\t";
+            }
             cout << endl;
         }
+        cout << endl;
+        cout << endl;
+        cout << "\t";
+        for (int j = 0; j < countConsumers; j++) {
+            if (j == countConsumers - 1)
+                cout << needs[j] << "  " << "Потребности";
+            else
+                cout << needs[j] << "\t";
+
+        }
+        cout << endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
     else {
         for (int i = 0; i < 20; i++)
@@ -584,6 +642,16 @@ void Method_potentials::showPostavki() {
         }
     }
 
+}
+
+void Method_potentials::showEstimation() {
+    cout << endl;
+    for (int i = 0; i < countSuppliers; i++)
+    {
+        for (int j = 0; j < countConsumers; j++)
+            std::cout << costMat[i][j].get_defferncTarifAndPotincials() << "\t";
+        cout << endl;
+    }
 }
 
 double Method_potentials::findMax() {
@@ -905,7 +973,7 @@ void Method_potentials::redistributionSupplies() {
         for (int i = 0; i < сonsumerPotincials.size(); i++)
             cout << сonsumerPotincials[i] << " ";
         cout << endl;*/
-        calculatePotencials_parallel();
+        calculatePotencials();
     }
 }
 

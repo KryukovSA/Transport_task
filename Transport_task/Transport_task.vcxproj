@@ -145,11 +145,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CLI.cpp" />
     <ClCompile Include="Method_potentials.cpp" />
     <ClCompile Include="Parallel.cpp" />
     <ClCompile Include="Parallel_research.cpp" />
     <ClCompile Include="RedistributionTest.cpp" />
-    <ClCompile Include="SFML_ui.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />

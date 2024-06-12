@@ -15,8 +15,8 @@
 //    int flag = 0;// 1 - из табл тарифы     0 - автогенерация
 //
 //    if (flag == 0) {
-//        method_potencials.set_countSuppliers(600);
-//        method_potencials.set_countConsumers(600);
+//        method_potencials.set_countSuppliers(800);
+//        method_potencials.set_countConsumers(800);
 //    }
 //
 //    vector<vector<Cell>> main_matrix;

@@ -4,10 +4,14 @@
 #include <iostream>
 #include "libxl.h"
 #include <omp.h>
-
+#include <unordered_set>
 
 
 using namespace std;
+
+enum Direction {
+    RIGHT, DOWN, LEFT, UP
+};
 
 class Method_potentials {
 
@@ -39,9 +43,10 @@ public:
 
     void method_potentials_init(int flag, int listNum, vector<vector<Cell>>& costMat_);
     double getRandomNumber(int min, int max);
-    void showTable();
+    void showTarifs();
     void methodMinElem();
     void showPostavki();
+    void showEstimation();
     void save_example();
 
     void updateStatuses1(vector<int>& indexIinChain, vector<int>& indexJinChain);
@@ -53,6 +58,7 @@ public:
     bool checkDegeneratePlan();
     void calculatePotencials();
 
+    void printLine() { for (int i = 0; i < 150; i++) { cout << "_"; } cout << endl; };
     bool checkOptimal();
     void redistributionSupplies();
     double calculatingÑosts();
@@ -84,8 +90,11 @@ public:
 
     void solve_electric_sequence(int electric_count, double  economic_koef);
 
+    void redistributionSuppliesNewShemaElectric();
 
+    bool containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain);
 
 };
 
 bool containIndexes(int i, int j, int size, const vector<int>& indexIinChain, const vector<int>& indexJinChain);
+bool isForbidden(int i, int j, const unordered_set<int>& forbiddenCells, int countConsumers);

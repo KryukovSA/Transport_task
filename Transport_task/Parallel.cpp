@@ -483,7 +483,7 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
         closeTypeTask = false;
     }
 
-    std::cout << std::fixed << std::setprecision(5);
+    //std::cout << std::fixed << std::setprecision(5);
      static int num = 0;
      //if (num == 0) {
      //    cout << " запасы поставщиков" << endl;
@@ -498,20 +498,27 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
      //    }
      //    cout << endl;
      //}
-    add_electric(electric_count, economic_koef);
+    //add_electric(electric_count, economic_koef); //для рандомной генерации нужен
+     this->correct_electric_tarifs(economic_koef);
+     printLine();
+     cout << "Исходные данные: " << endl;
+     this->showTarifs();
+    
+     methodMinElem_electric();
+    if (num == 0) {
+        printLine();
+        cout << "Опорный план " << endl;
+        this->showPostavki();//первый опорный план
+    }
+    
+    cout << "\nCтоимость перевозок в опорном плане составляет: " << fixed << static_cast<long long>(calculatingСosts()) << endl;
 
-    methodMinElem_electric();
-   
-    //if (num == 0) {
-    //    cout << "опорный план " << endl;
-    //    showPostavki();//первый опорный план
-    //}
 
     num++;  
-    {
-        std::cout << std::fixed << std::setprecision(1);
-        std::cout << "стоимость с экономичеким коэфицентом: " << economic_koef << std::endl;
-    }
+    //{
+    //    std::cout << std::fixed << std::setprecision(1);
+    //    std::cout << "стоимость с экономичеким коэфицентом: " << economic_koef << std::endl;
+    //}
     //showPostavki();//первый опорный план
 
     //cout << "result cost after minimal elem method: " << calculatingСosts() << endl;
@@ -525,7 +532,12 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
     redistributionSuppliesNewShemaElectric();
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-    cout << "result minimal cost: " << fixed << static_cast<long long>(calculatingСosts()) << endl;
+    printLine();
+    cout << "Оптимальный план:";
+    showPostavki();
+    cout << "\nИспользовано " <<this->electric_count<< " электрогрузовиков" << endl;
+    std::cout << std::fixed << std::setprecision(1);
+    cout << "стоимость перевозок с экономичеким коэфицентом: " << economic_koef <<" составляет "<< fixed << static_cast<long long>(calculatingСosts()) << endl;
     //std::cout << "execution time: " << duration.count() << " second." << std::endl;
     //showPostavki();
     cout << endl;
@@ -564,9 +576,19 @@ void Method_potentials::add_electric(int count, double economic_koef) {
     }
     for (int i = 0; i < count; i++) {
         costMat[i][i*2].set_electric();
-        costMat[i][i*2].set_tarif(costMat[i][i].get_tarif()* economic_koef);//тариф на 2 делим по условию задумано
+        costMat[i][i*2].set_tarif(costMat[i][i].get_tarif()* economic_koef);
     }
     
+}
+
+void Method_potentials::correct_electric_tarifs(double economic_koef) {
+    for (int i = 0; i < countSuppliers; i++) {
+        for (int j = 0; j < countConsumers; j++) {
+            if (costMat[i][j].get_electric() == true)
+                costMat[i][j].set_tarif(std::ceil(costMat[i][j].get_tarif()* economic_koef));
+        }
+    }
+
 }
 
 void Method_potentials::calculatePotencials_parallel() {
@@ -725,7 +747,7 @@ void Method_potentials::redistributionSuppliesNewShemaElectric() {
                 }
                 break;
             case UP:
-                for (int i = currentIndexI - 1; i >= 0 && flag == 0; --i) {
+                for (int i = currentIndexI - 1; i >= 0&& flag == 0; --i) {
                     if (costMat[i][currentIndexJ].get_status() == basic && !containIndexes1(i, currentIndexJ, indexIinChain, indexJinChain) && !isForbidden(i, currentIndexJ, forbiddenCells, countConsumers)) {
                         currentIndexI = i;
                         flag = 1;

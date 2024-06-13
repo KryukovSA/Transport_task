@@ -5,7 +5,9 @@
 #include "libxl.h"
 #include <omp.h>
 #include <unordered_set>
-
+#include <regex>
+#include <locale>
+#include <codecvt>
 
 using namespace std;
 
@@ -24,6 +26,7 @@ class Method_potentials {
     vector<double> ñonsumerPotincials;
     //vector<vector<Cell>>costMat(countSuppliers, vector<Cell>(countConsumers));
     vector<vector<Cell>>costMat;
+    int electric_count = 0;
 public:
     double clean_time = 0;
     Method_potentials() {
@@ -85,6 +88,8 @@ public:
     void add_electric(int count, double economic_koef);
 
     void redistributionSupplies_elctric();
+
+    void correct_electric_tarifs(double economic_koef);
 
     void calculatePotencials_parallel();
 

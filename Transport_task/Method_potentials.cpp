@@ -2,6 +2,7 @@
 #include <fstream>
 #include<numeric>
 #include <chrono>
+#include <iomanip>
 
 using namespace libxl;
 
@@ -48,6 +49,8 @@ void Method_potentials::solve1() {
 
     num++;
 
+    cout << "\nCтоимость перевозок в опорном плане составляет: " << fixed << static_cast<long long>(calculatingСosts()) << endl;
+
     //cout << "result cost after minimal elem method: " << static_cast<long long>(calculatingСosts()) << endl;
     while (checkDegeneratePlan()) {//вырожденность убирает
         addNullTransportation();
@@ -58,7 +61,7 @@ void Method_potentials::solve1() {
     redistributionSuppliesNewShema();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
-
+    std::cout << std::fixed << std::setprecision(0);
     printLine();
     cout << "Оптимальный план:";
     showPostavki(); 
@@ -359,7 +362,14 @@ void Method_potentials::save_example() {
 
 
 
-
+// Function to convert const wchar_t* to std::string
+std::string wchar_to_string(const wchar_t* wstr) {
+    // Create a wstring from the wchar_t* input
+    std::wstring ws(wstr);
+    // Convert wstring to string using wstring_convert and codecvt_utf8
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+    return convert.to_bytes(ws);
+}
 
 
 void Method_potentials::method_potentials_init(int flag, int listnum, vector<vector<Cell>>& costMat_) {
@@ -413,8 +423,6 @@ void Method_potentials::method_potentials_init(int flag, int listnum, vector<vec
                             break;
                         }
                     }
-                   
-                 
 
 
                     for (int col = sheet->firstCol() + 1; col <= sheet->firstCol() + numCols; ++col) {
@@ -429,19 +437,27 @@ void Method_potentials::method_potentials_init(int flag, int listnum, vector<vec
                     costMat.resize(countSuppliers, vector<Cell>(countConsumers));
                     suppliersPotincials.resize(countSuppliers);
                     сonsumerPotincials.resize(countConsumers);
-                    int i = 0;
-                    
+                    std::regex ePattern(R"((\d+\.?\d*)e)");
+
                     for (int row = sheet->firstRow() + 2; row < numRows; ++row) {//??????
-                        int j = 0;
                         for (int col = sheet->firstCol() + 1; col <= sheet->firstCol() + numCols; ++col) {
                             
-                            costMat[row-2][col-1].set_tarif(sheet->readNum(row, col));
-                            j++;
+                            libxl::CellType cellType = sheet->cellType(row, col);
+                            if (cellType == libxl::CELLTYPE_NUMBER) {
+                                costMat[row - 2][col - 1].set_tarif(sheet->readNum(row, col));
+                            }
+                            else if (cellType == libxl::CELLTYPE_STRING) {
+                                const wchar_t* cellText = sheet->readStr(row, col);
+                                std::smatch match;
+                                std::string cellStr = wchar_to_string(cellText);
+                                if (std::regex_search(cellStr, match, ePattern)) {
+                                    costMat[row - 2][col - 1].set_tarif(std::stod(match[1].str()));
+                                    costMat[row - 2][col - 1].set_electric();
+                                    electric_count++;
+                                }
+                            }
                         }
-                        i++;
                     }
-          
-
 
                     //cout << "колическтва запасов  " << countSuppliers << endl;
                     //// Теперь у вас есть вектор с данными из Excel
@@ -512,7 +528,10 @@ void Method_potentials::showTarifs() {
     for (int i = 0; i < countSuppliers; i++) {
         cout << stocks[i] << " |\t";
         for (int j = 0; j < countConsumers; j++) {
-            std::cout << costMat[i][j].get_tarif() << "\t";
+            if (costMat[i][j].get_electric() == true)
+                std::cout << "|" << costMat[i][j].get_tarif() << "|" << "\t";
+            else
+                std::cout << costMat[i][j].get_tarif() << "\t";
         }
         cout << endl;
     }
@@ -600,7 +619,10 @@ void Method_potentials::showPostavki() {
         for (int i = 0; i < countSuppliers; i++) {
             cout << stocks[i] << " |\t";
             for (int j = 0; j < countConsumers; j++) {
-                std::cout << costMat[i][j].get_cargoVolueme() << "\t";
+                if(costMat[i][j].get_electric() == true)
+                    std::cout <<"|"<< costMat[i][j].get_cargoVolueme()<<"|" << "\t";
+                else
+                    std::cout << costMat[i][j].get_cargoVolueme() << "\t";
             }
             cout << endl;
         }
@@ -649,7 +671,10 @@ void Method_potentials::showEstimation() {
     for (int i = 0; i < countSuppliers; i++)
     {
         for (int j = 0; j < countConsumers; j++)
-            std::cout << costMat[i][j].get_defferncTarifAndPotincials() << "\t";
+            if (costMat[i][j].get_electric() == true)
+                std::cout << "|" << costMat[i][j].get_defferncTarifAndPotincials() << "|" << "\t";
+            else
+                std::cout << costMat[i][j].get_defferncTarifAndPotincials() << "\t";
         cout << endl;
     }
 }

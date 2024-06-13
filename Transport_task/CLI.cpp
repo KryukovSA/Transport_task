@@ -23,20 +23,11 @@ int main() {
     method_potencials_standart.method_potentials_init(flag, 8, main_matrix);
 
 
-    cout << "Решение транспортной задачи с 1 видом транспорта" << endl;
+    cout << "Решение транспортной задачи с одним видом транспорта" << endl;
     method_potencials_standart.printLine();
     cout << "Исходные данные: " << endl;
     method_potencials_standart.showTarifs();
     method_potencials_standart.solve1();
-
-
-
-
-
-
-
-
-
 
 
 
@@ -53,6 +44,20 @@ int main() {
             break; // Корректное значение введено, выход из цикла
         }
     }
+
+    method_potencials_electric.method_potentials_init(flag, 9, main_matrix);
+    cout << "Решение транспортной задачи с двумя видами транспорта" << endl;
+    //method_potencials_electric.printLine();
+    //cout << "Исходные данные: " << endl;
+    //method_potencials_electric.showTarifs();
+    method_potencials_electric.solve_parallel(0,econom_parametr);
+
+
+    cout << endl;
+
+
+
+
 
     //vector<vector<int>> result_volumes(method_potencials.get_countSuppliers(), std::vector<int>(method_potencials.get_countConsumers()));
     //vector<vector<Cell>> main_matrix;

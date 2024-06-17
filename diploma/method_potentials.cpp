@@ -240,6 +240,12 @@ bool checkOptimal(vector<vector<Cell>>& costMat, vector<double>& suppliersPotinc
                 costMat[i][j].set_defferncTarifAndPotincials(costMat[i][j].get_tarif() - suppliersPotincials[i] - сonsumerPotincials[j]);
         }
     }
+    for (int i = 0; i < suppliersPotincials.size(); i++) {
+        for (int j = 0; j < сonsumerPotincials.size(); j++) {
+            if (costMat[i][j].get_status() == free_)
+                costMat[i][j].set_defferncTarifAndPotincials(costMat[i][j].get_tarif() - suppliersPotincials[i] - сonsumerPotincials[j]);
+        }
+    }
 
     for (int i = 0; i < suppliersPotincials.size(); i++) {
         for (int j = 0; j < сonsumerPotincials.size(); j++) {
@@ -257,7 +263,7 @@ bool checkOptimal(vector<vector<Cell>>& costMat, vector<double>& suppliersPotinc
 }
 
 void updateStatuses(vector<vector<Cell>>& costMat, vector<int>& indexIinChain, vector<int>& indexJinChain) {
-    for (int i = 1; i < indexIinChain.size() - 1; i++) { // -1 тк в цепочке начальная клетка записана еще и в конце // с одного может начинать чтоб первая клетка не становилась свободной?(приводит к неправильной работе)
+    for (int i = 0; i < indexIinChain.size(); i++) { // -1 тк в цепочке начальная клетка записана еще и в конце // с одного может начинать чтоб первая клетка не становилась свободной?(приводит к неправильной работе)
         if (costMat[indexIinChain[i]][indexJinChain[i]].get_cargoVolueme() > 0) {
             costMat[indexIinChain[i]][indexJinChain[i]].set_status(basic);
         }

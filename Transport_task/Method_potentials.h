@@ -99,6 +99,8 @@ public:
 
     bool containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain);
 
+    void solve_for_bigsize();
+    void solve_parallel_for_bigsize(int electric_count, double  economic_koef);
 };
 
 bool containIndexes(int i, int j, int size, const vector<int>& indexIinChain, const vector<int>& indexJinChain);

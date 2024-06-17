@@ -485,19 +485,6 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
 
     //std::cout << std::fixed << std::setprecision(5);
      static int num = 0;
-     //if (num == 0) {
-     //    cout << " Á‡Ô‡Ò˚ ÔÓÒÚ‡‚˘ËÍÓ‚" << endl;
-     //    for (int i = 0; i < countSuppliers; i++) {
-     //        cout << stocks[i] << " ";
-     //    }
-     //    cout << endl;
-     //    
-     //    cout << "ÔÓÚÂ·ÌÓÒÚË " << endl;
-     //    for (int i = 0; i < countConsumers; i++) {
-     //        cout << needs[i] << " ";
-     //    }
-     //    cout << endl;
-     //}
     //add_electric(electric_count, economic_koef); //‰Îˇ ‡Ì‰ÓÏÌÓÈ „ÂÌÂ‡ˆËË ÌÛÊÂÌ
      this->correct_electric_tarifs(economic_koef);
      printLine();
@@ -530,6 +517,7 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
     auto start_time = std::chrono::high_resolution_clock::now();
     //redistributionSupplies_parallel(); //old
     redistributionSuppliesNewShemaElectric();
+    showEstimation();
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     printLine();
@@ -538,6 +526,40 @@ void Method_potentials::solve_parallel(int electric_count, double  economic_koef
     cout << "\n»ÒÔÓÎ¸ÁÓ‚‡ÌÓ " <<this->electric_count<< " ˝ÎÂÍÚÓ„ÛÁÓ‚ËÍÓ‚" << endl;
     std::cout << std::fixed << std::setprecision(1);
     cout << "ÒÚÓËÏÓÒÚ¸ ÔÂÂ‚ÓÁÓÍ Ò ˝ÍÓÌÓÏË˜ÂÍËÏ ÍÓ˝ÙËˆÂÌÚÓÏ: " << economic_koef <<" ÒÓÒÚ‡‚ÎˇÂÚ "<< fixed << static_cast<long long>(calculating—osts()) << endl;
+    //std::cout << "execution time: " << duration.count() << " second." << std::endl;
+    //showPostavki();
+    cout << endl;
+}
+
+void Method_potentials::solve_parallel_for_bigsize(int electric_count, double  economic_koef) {
+    if (!checkCloseTypeTask()) {//ÂÒÎË ÌÂ Á‡Í˚Ú‡ˇ
+        addDataForClosingTask();
+        closeTypeTask = false;
+    }
+
+
+    //cout << "—ÚÓËÏÓÒÚ¸ Ò ˝ÍÓÌÓÏË˜ÂÒÍËÏ ÍÓ˝ÙÙËˆËÂÌÚÓÏ: " << economic_koef << endl;
+    //std::cout << std::fixed << std::setprecision(5);
+    add_electric(electric_count, economic_koef); //‰Îˇ ‡Ì‰ÓÏÌÓÈ „ÂÌÂ‡ˆËË ÌÛÊÂÌ
+    methodMinElem_electric();
+
+    //{
+    //    std::cout << std::fixed << std::setprecision(1);
+    //    std::cout << "ÒÚÓËÏÓÒÚ¸ Ò ˝ÍÓÌÓÏË˜ÂÍËÏ ÍÓ˝ÙËˆÂÌÚÓÏ: " << economic_koef << std::endl;
+    //}
+    //showPostavki();//ÔÂ‚˚È ÓÔÓÌ˚È ÔÎ‡Ì
+
+    //cout << "result cost after minimal elem method: " << calculating—osts() << endl;
+    while (checkDegeneratePlan()) {//‚˚ÓÊ‰ÂÌÌÓÒÚ¸ Û·Ë‡ÂÚ
+        addNullTransportation();
+    }
+    calculatePotencials_parallel();
+    auto start_time = std::chrono::high_resolution_clock::now();
+    redistributionSuppliesNewShemaElectric();
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
+    std::cout << std::fixed << std::setprecision(1);
+    cout << "ÒÚÓËÏÓÒÚ¸ ÔÂÂ‚ÓÁÓÍ Ò ˝ÍÓÌÓÏË˜ÂÍËÏ ÍÓ˝ÙËˆÂÌÚÓÏ: " << economic_koef << " ÒÓÒÚ‡‚ÎˇÂÚ " << fixed << static_cast<long long>(calculating—osts()) << endl;
     //std::cout << "execution time: " << duration.count() << " second." << std::endl;
     //showPostavki();
     cout << endl;
@@ -595,11 +617,11 @@ void Method_potentials::calculatePotencials_parallel() {
     double identefikator = -100.1786;
 
     // «‡ÔÓÎÌÂÌËÂ suppliersPotincials Ë ÒonsumerPotincials Ô‡‡ÎÎÂÎ¸ÌÓ
-#pragma omp parallel for
+#pragma omp parallel for default(none)
     for (int i = 0; i < suppliersPotincials.size(); i++) {
         suppliersPotincials[i] = identefikator;
     }
-#pragma omp parallel for
+#pragma omp parallel for default(none)
     for (int i = 0; i < ÒonsumerPotincials.size(); i++) {
         ÒonsumerPotincials[i] = identefikator;
     }
@@ -608,7 +630,7 @@ void Method_potentials::calculatePotencials_parallel() {
     int index = 0;
 
     // Õ‡ıÓÊ‰ÂÌËÂ ËÌ‰ÂÍÒ‡ ÒÚÓÍË Ò Ì‡Ë·ÓÎ¸¯ËÏ ÍÓÎË˜ÂÒÚ‚ÓÏ ·‡ÁÓ‚˚ı ˇ˜ÂÂÍ
-#pragma omp parallel for reduction(max:max_count_basic) shared(index)
+#pragma omp parallel for reduction(max:max_count_basic) shared(index) default(none)
     for (int m = 0; m < suppliersPotincials.size(); m++) {
         int max_count_tmp = 0;
         for (int n = 0; n < ÒonsumerPotincials.size(); n++) {
@@ -629,24 +651,24 @@ void Method_potentials::calculatePotencials_parallel() {
 
     // ¬˚ÔÓÎÌÂÌËÂ ÓÒÌÓ‚ÌÓ„Ó ‡Ò˜ÂÚ‡
     while (counter < suppliersPotincials.size() - 1) {
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(identefikator)
         for (int i = 0; i < suppliersPotincials.size(); i++) {
             if (suppliersPotincials[i] != identefikator) {
                 for (int j = 0; j < ÒonsumerPotincials.size(); j++) {
-                    if (costMat[i][j].get_status() == basic)
-//#pragma omp critical
-//                    {
-                        ÒonsumerPotincials[j] = costMat[i][j].get_tarif() - suppliersPotincials[i];
- //                   }
+                    if (costMat[i][j].get_status() == basic) {
+                        double temp = costMat[i][j].get_tarif() - suppliersPotincials[i];
+#pragma omp atomic write
+                        ÒonsumerPotincials[j] = temp;
+                    }
                 }
             }
+
             if (suppliersPotincials[i] == identefikator) {
                 for (int j = 0; j < ÒonsumerPotincials.size(); j++) {
                     if (costMat[i][j].get_status() == basic && ÒonsumerPotincials[j] != identefikator) {
-//#pragma omp critical
-//                        {
-                            suppliersPotincials[i] = costMat[i][j].get_tarif() - ÒonsumerPotincials[j];
- //                       }
+                        double temp = costMat[i][j].get_tarif() - ÒonsumerPotincials[j];
+#pragma omp atomic write
+                        suppliersPotincials[i] = temp;
                         break;
                     }
                 }
@@ -823,6 +845,7 @@ void Method_potentials::redistributionSuppliesNewShemaElectric() {
         }
 
         if (costMat[minI][minJ].get_electric() == true || electric_make_zero > 0) {
+            cout << "›ÌÂ„Ó˝ÙÙÂÍÚË‚ÌÓÒÚ¸ ÛÏÂÌ¸¯ËÚ¸Òˇ, ÓÔÚËÏËÁ‡ˆËˇ ÔÂ‚‡Ì‡" << endl;
             break;
         }  
         //------------------------------------------------------------------------------------

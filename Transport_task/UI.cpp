@@ -65,7 +65,7 @@
 //
 //
 //   method_potencials.method_potentials_init(flag, 8, main_matrix); 
-//   method_potencials.solve1();
+//   method_potencials.solve_for_bigsize();
 //   if (econom_parametr - 0.001 < 1 && econom_parametr + 0.001 > 1) {//так как функции округления не работают
 //       for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //           for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
@@ -77,7 +77,7 @@
 //    //method_potencials.solve_electric_sequence(electric_count);
 //   
 //    method_potencials.method_potentials_init(flag, 8, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.9);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.9);
 //    if (econom_parametr-0.001 < 0.9  && econom_parametr + 0.001 > 0.9) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
@@ -87,7 +87,7 @@
 //    }
 //
 //    method_potencials.method_potentials_init(flag, 8, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.8);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.8);
 //    if (econom_parametr - 0.001 < 0.8 && econom_parametr + 0.001 > 0.8) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
@@ -97,7 +97,7 @@
 //    }
 //
 //    method_potencials.method_potentials_init(flag, 8, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.7);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.7);
 //    if (econom_parametr - 0.001 < 0.7 && econom_parametr + 0.001 > 0.7) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
@@ -107,7 +107,7 @@
 //    }
 //
 //    method_potencials.method_potentials_init(flag, 8, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.6);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.6);
 //    if (econom_parametr - 0.001 < 0.6 && econom_parametr + 0.001 > 0.6) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
@@ -117,7 +117,7 @@
 //    }
 //
 //    method_potencials.method_potentials_init(flag, 8, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.5);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.5);
 //    if (econom_parametr - 0.001 < 0.5 && econom_parametr + 0.001 > 0.5) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
@@ -128,7 +128,7 @@
 //
 //
 //    method_potencials.method_potentials_init(flag, 8, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    if (econom_parametr - 0.001 < 0.4 && econom_parametr + 0.001 > 0.4) {
 //        for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //            for (int j = 0; j < method_potencials.get_countConsumers(); j++) {

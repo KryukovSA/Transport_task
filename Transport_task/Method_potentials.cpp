@@ -59,18 +59,42 @@ void Method_potentials::solve1() {
     auto start_time = std::chrono::high_resolution_clock::now();
     //redistributionSupplies();
     redistributionSuppliesNewShema();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
+    
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
     std::cout << std::fixed << std::setprecision(0);
+    showEstimation();
     printLine();
     cout << "Оптимальный план:";
     showPostavki(); 
-    cout << "\nстоимость перевозок без использования электрогрузовиков" << endl;
-    cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
+    cout << "\nстоимость перевозок без использования электрогрузовиков: " << static_cast<long long>(calculatingСosts()) << endl;
+    //cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
     //std::cout << "execution time: " << duration.count() << " second." << std::endl;
     
     cout << endl;
 }
+
+void Method_potentials::solve_for_bigsize() {
+    static int num = 0;
+    //showTable();
+    if (!checkCloseTypeTask()) {//если не закрытая
+        addDataForClosingTask();
+        closeTypeTask = false;
+    }
+    methodMinElem();
+    calculatePotencials();
+    auto start_time = std::chrono::high_resolution_clock::now();
+    //redistributionSupplies();
+    redistributionSuppliesNewShema();//до тех пор пока не будет оптимальным, вычисления потенциалов внутри метода
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end_time - start_time);
+    cout << "\nстоимость перевозок без использования электрогрузовиков: " << static_cast<long long>(calculatingСosts()) << endl;
+    //cout << "result minimal cost: " << static_cast<long long>(calculatingСosts()) << endl;
+    //std::cout << "execution time: " << duration.count() << " second." << std::endl;
+
+    cout << endl;
+}
+
 
 
 
@@ -668,15 +692,34 @@ void Method_potentials::showPostavki() {
 
 void Method_potentials::showEstimation() {
     cout << endl;
+    printLine();
+    cout << "Проверка оптимальности: " << endl;
+    cout << "\n";
+    cout << "Запасы" << endl;
     for (int i = 0; i < countSuppliers; i++)
-    {
-        for (int j = 0; j < countConsumers; j++)
+    {   
+        cout << stocks[i] << " |\t";
+        for (int j = 0; j < countConsumers; j++) {
             if (costMat[i][j].get_electric() == true)
                 std::cout << "|" << costMat[i][j].get_defferncTarifAndPotincials() << "|" << "\t";
             else
                 std::cout << costMat[i][j].get_defferncTarifAndPotincials() << "\t";
+        }
         cout << endl;
     }
+    cout << endl;
+    cout << endl;
+    cout << "\t";
+    for (int j = 0; j < countConsumers; j++) {
+        if (j == countConsumers - 1)
+            cout << needs[j] << "  " << "Потребности";
+        else
+            cout << needs[j] << "\t";
+    }
+    cout << endl;
+
+
+
 }
 
 double Method_potentials::findMax() {
@@ -760,6 +803,13 @@ void Method_potentials::calculatePotencials() {
 bool Method_potentials::checkOptimal() {
 
     bool optimal = true;
+
+    for (int i = 0; i < suppliersPotincials.size(); i++) {
+        for (int j = 0; j < сonsumerPotincials.size(); j++) {
+            if (costMat[i][j].get_status() == basic)
+                costMat[i][j].set_defferncTarifAndPotincials(costMat[i][j].get_tarif() - suppliersPotincials[i] - сonsumerPotincials[j]);
+        }
+    }
     //считакм оценки свободных клеток
     for (int i = 0; i < suppliersPotincials.size(); i++) {
         for (int j = 0; j < сonsumerPotincials.size(); j++) {

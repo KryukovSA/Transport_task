@@ -11,12 +11,12 @@
 //
 //    srand(static_cast<unsigned int>(time(0)));
 //    Method_potentials method_potencials;
-//    int electric_count = 250;//количество не более половины числа потербителей например
+//    int electric_count = 30;//количество не более половины числа потербителей например
 //    int flag = 0;// 1 - из табл тарифы     0 - автогенерация
 //
 //    if (flag == 0) {
-//        method_potencials.set_countSuppliers(800);
-//        method_potencials.set_countConsumers(800);
+//        method_potencials.set_countSuppliers(350);
+//        method_potencials.set_countConsumers(350);
 //    }
 //
 //    vector<vector<Cell>> main_matrix;
@@ -25,62 +25,62 @@
 //
 //    omp_set_num_threads(1);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(2);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(3);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(4);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(5);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(6);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(7);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(8);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(9);  
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(10);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(11);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //    method_potencials.clean_time = 0;
 //    omp_set_num_threads(12);
 //    method_potencials.method_potentials_init(flag, 7, main_matrix);
-//    method_potencials.solve_parallel(electric_count, 0.4);
+//    method_potencials.solve_parallel_for_bigsize(electric_count, 0.4);
 //    cout << "clean time: " << method_potencials.clean_time << " second." << std::endl;
 //
 //

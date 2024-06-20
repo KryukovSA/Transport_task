@@ -52,25 +52,22 @@ public:
     void showEstimation();
     void save_example();
 
-    void updateStatuses1(vector<int>& indexIinChain, vector<int>& indexJinChain);
+    void updateStatuses(vector<int>& indexIinChain, vector<int>& indexJinChain);
     vector<vector<Cell>> generate_transport_task();
-    void redistributionSuppliesNewShema();
-    void solve1();
+    void redistributionSuppliers();//перераспределение поставок для стандарной задачи
+    void solve_standart_transport();
 
     double findMax();
     bool checkDegeneratePlan();
     void calculatePotencials();
 
-    void printLine() { for (int i = 0; i < 150; i++) { cout << "_"; } cout << endl; };
+    void printLine() { for (int i = 0; i < 140; i++) { cout << "_"; } cout << endl; };
     bool checkOptimal();
-    void redistributionSupplies();
     double calculatingСosts();
-    void updateStatuses(vector<int>& indexIinChain, vector<int>& indexJinChain);
     void addNullTransportation();
     bool ignoreCell(int indI, int indJ, vector<int> ignoreIndexI, vector<int> ignoreIndexJ);
     bool checkCloseTypeTask();
     void addDataForClosingTask();
-    void solve();
     int get_value(int i, int j);
 
 
@@ -78,30 +75,23 @@ public:
     //метод минимального эл для электротранспорта
     void methodMinElem_electric();
 
-    //солве для параллельной
+    //решить параллельно с электроперевозками
     void solve_parallel(int electric_count, double  economic_koef);
 
-    //работает с параллельным вычисл потенциалов
-    void redistributionSupplies_parallel();
-
-    //помечает электроперевозки не более чем поставщиков
+    //помечает электроперевозки не более чем поставщиков, работает для автогенерации
     void add_electric(int count, double economic_koef);
-
-    void redistributionSupplies_elctric();
 
     void correct_electric_tarifs(double economic_koef);
 
     void calculatePotencials_parallel();
 
-    void solve_electric_sequence(int electric_count, double  economic_koef);
+    void redistributionSuppliesElectric();
 
-    void redistributionSuppliesNewShemaElectric();
-
-    bool containIndexes1(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain);
+    bool containIndexes(int i, int j, const vector<int>& indexIinChain, const vector<int>& indexJinChain);
 
     void solve_for_bigsize();
     void solve_parallel_for_bigsize(int electric_count, double  economic_koef);
 };
 
-bool containIndexes(int i, int j, int size, const vector<int>& indexIinChain, const vector<int>& indexJinChain);
+bool containIndexes1(int i, int j, int size, const vector<int>& indexIinChain, const vector<int>& indexJinChain);
 bool isForbidden(int i, int j, const unordered_set<int>& forbiddenCells, int countConsumers);

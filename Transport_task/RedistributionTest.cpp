@@ -29,7 +29,7 @@
 //
 //
 //    method_potencials.method_potentials_init(flag, 8, main_matrix);
-//    method_potencials.solve1();
+//    method_potencials.solve_standart_transport();
 //    for (int i = 0; i < method_potencials.get_countSuppliers(); i++) {
 //        for (int j = 0; j < method_potencials.get_countConsumers(); j++) {
 //            result_volumes[i][j] = method_potencials.get_value(i, j);

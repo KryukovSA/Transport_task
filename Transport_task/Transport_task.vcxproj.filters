@@ -18,10 +18,10 @@
     <ClCompile Include="Method_potentials.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Parallel.cpp">
+    <ClCompile Include="Electric.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp">
+    <ClCompile Include="UI_big_size.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Parallel_research.cpp">

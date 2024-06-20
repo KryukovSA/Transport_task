@@ -147,10 +147,10 @@
   <ItemGroup>
     <ClCompile Include="CLI.cpp" />
     <ClCompile Include="Method_potentials.cpp" />
-    <ClCompile Include="Parallel.cpp" />
+    <ClCompile Include="Electric.cpp" />
     <ClCompile Include="Parallel_research.cpp" />
     <ClCompile Include="RedistributionTest.cpp" />
-    <ClCompile Include="UI.cpp" />
+    <ClCompile Include="UI_big_size.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
